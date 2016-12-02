@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>How this Burst Pool works</title>
+</head>
+<body>
+<ul>
+    <li><b>Minimum payout is 250 Burst</b></li>
+    <li><b>Pool fee is 1.5%</b></li>
+    <li><b>Transaction fee is 0.5%</b> (or minimum 1 burst as required by the network)</li>
+    <li><b>Payment is instant when pool has positive a balance</b></li>
+    <li><b>Share value reduction is 50% per block</b></li>
+        <p> If the pool does not forge the Block at the current round, all the miners shares are kept up to 50 blocks,
+            but their value is reduced by 50% each Round we do not forge a Block.
+            If the pool does forge a Block, all shares are summed up to the current Block Number and
+            payed out propotional to the summed up shares of each miner.
+        </p>
+    <li><b>Block forward allocation is 50%</b></li>
+        <p> If pool has a balance (lets say 10000 Burst),
+            5000 are distributed to the miners proportional to their shares up to current block as described above.
+            The other 5000 Burst will be allocated and paid in the next round, (whether we forge a block or not),
+            this allocation continues until the pool balance has drained out.
+        </p>
+    <li><b>No Deadline limit</b></li>
+        <p> The deadline value from miners is converted into a share value using this equation<br/>
+            share = 1000 / ( NetDiff * Deadline + 1 ) <sup>0.75</sup><br/>
+            where NetDiff (network difficulty) is calculated by Block0-BaseTarget / Block#N-BaseTarget<br/><br/>
+            <b>note</b> : to prevent users spamming low shares, we implemented a share penalty of -0.001 for each submission
+            with an higher deadline then the miners own current best deadline!
+            Spamming low deadlines is usles sinse the pool will always pick the best submitted deadline from each miner in a round.
+        </p>
+</ul>
+</body>
+</html>
