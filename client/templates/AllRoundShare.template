@@ -4,4 +4,3 @@
     <div class="AllRoundItemCol divCell" id="AllRoundItem-Share-{{accountId}}">{{share}}</div>
     <div class="AllRoundItemCol divCell" id="AllRoundItem-Count-{{accountId}}">[ {{roundCount}} ]</div>
 </div>
-http://burstcoin.eu/address/6880100270239163705
