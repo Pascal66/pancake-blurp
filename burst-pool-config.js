@@ -14,7 +14,7 @@ module.exports = {
     blockMature : 1,
     txFeePercent : 0.0005,
 	devFee : true,
-    poolFee : 0.0015,
+    poolFee : 0.015,
     poolDiff : 1000000,
     poolDiffCurve : 0.75,
     poolPort : 8124,
