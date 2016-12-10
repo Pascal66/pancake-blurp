@@ -565,45 +565,45 @@ $(document).ready(function(){
 
         socket.on('log', onLog);
 
-        socket.on('ping', function(data){
-            socket.emit('pong', {beat: 1});
-        });
+                   socket.on('ping', function(data){
+                       socket.emit('pong', {beat: 1});
+                   });
 
-        socket.on('sentList', function(data){
-            var jsonData = JSON.parse(data);
-            onSentList(jsonData);
-        });
+                   socket.on('sentList', function(data){
+                       var jsonData = JSON.parse(data);
+                       onSentList(jsonData);
+                   });
 
-        socket.on('shareList',function(data){
-            var jsonData = JSON.parse(data);
-            onShareList(jsonData);
-        });
+                   socket.on('shareList',function(data){
+                       var jsonData = JSON.parse(data);
+                       onShareList(jsonData);
+                   });
 
-        socket.on('miningInfo', function(data){
-            var jsonData = JSON.parse(data);
-            onMiningInfo(jsonData);
-        });
+                   socket.on('miningInfo', function(data){
+                       var jsonData = JSON.parse(data);
+                       onMiningInfo(jsonData);
+                   });
 
-        socket.on('roundShares', function(data){
-            var jsonData = JSON.parse(data);
-            onRoundShare(jsonData);
-        });
+                   socket.on('roundShares', function(data){
+                       var jsonData = JSON.parse(data);
+                       onRoundShare(jsonData);
+                   });
 
-        socket.on('blockHistory', function(data){
-            var jsonData = JSON.parse(data);
-            blockHistory = jsonData;
-            updateMiningChart();
-        });
+                   socket.on('blockHistory', function(data){
+                       var jsonData = JSON.parse(data);
+                       blockHistory = jsonData;
+                       updateMiningChart();
+                   });
 
-        socket.on('balance', function(data){
-            var jsonData = JSON.parse(data);
-            userBalance = jsonData;
-        });
+                   socket.on('balance', function(data){
+                       var jsonData = JSON.parse(data);
+                       userBalance = jsonData;
+                   });
 
-        socket.on('submitNonce', function(data){
-            var jsonData = JSON.parse(data);
-            console.log(jsonData);
-        });
+                   socket.on('submitNonce', function(data){
+                       var jsonData = JSON.parse(data);
+                       console.log(jsonData);
+                   });
 
         $('#chatInput').keypress(function(e) {
             if(e.which == 13) {

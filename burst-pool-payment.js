@@ -428,7 +428,7 @@ function updateByNewBlock(height){
                 }
                 prevHeight--;
             }while(blockShare.length > 0);
-    poolSession.getBlockInfoFromHeight(height-1,function(blockInfo){
+    poolSession.getBlockInfoFromHeight(height-poolConfig.blockMature,function(blockInfo){
       if(blockInfo.status === true){
 
     var lastBlockWinner = blockInfo.data.generatorRS;
@@ -464,7 +464,7 @@ function updateByNewBlock(height){
                     //if(parseFloat(res.balance) > pendingPayment){
                   if(currentFund >= totalBlockReward){
 
-                            assignCumulativeFund(height-1,totalBlockReward);
+                            assignCumulativeFund(height-poolConfig.blockMature,totalBlockReward);
                             distributeShareToPayment();
     				        setTimeout(flushPaymentList(function(){}),5000);
     			        }
@@ -483,7 +483,7 @@ function updateByNewBlock(height){
             });
 
     }
-          poolProtocol.clientLogFormatted('<span class="logLine time">'+getDateTime()+'</span><span class="logLine"> Last Block: </span><span class="logLine Block">'+(height-1)+'</span> <span class="logLine Won"> '+isPoolWinner+'</span><span class="logLine"> Won By: </span><span class="logLine Addr2">'+lastBlockWinner+'</span>');
+          poolProtocol.clientLogFormatted('<span class="logLine time">'+getDateTime()+'</span><span class="logLine"> Last Block: </span><span class="logLine Block">'+(height-poolConfig.blockMature)+'</span> <span class="logLine Won"> '+isPoolWinner+'</span><span class="logLine"> Won By: </span><span class="logLine Addr2">'+lastBlockWinner+'</span>');
 
     });
 
