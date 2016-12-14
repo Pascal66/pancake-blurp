@@ -1,5 +1,5 @@
 <div class="RecentPaymentItem divRow" id="RecentPaymentItem-{{txid}}">
-    <div class="RecentPaymentItemCol divCell addr"><a href="http://burstcoin.biz/address/{{accountId}}">{{accountRS}}</a></div>
+    <div class="RecentPaymentItemCol divCell addr"><a href="http://burstcoin.biz/address/{{accountId}} "target="_blank" >{{accountRS}}</a></div>
     <div class="RecentPaymentItemCol divCell" id="RecentPaymentItem-Amount-{{txid}}">{{amountStr}}</div>
     <div class="RecentPaymentItemCol divCell" id="RecentPaymentItem-Time-{{txid}}"><a href="http://burstcoin.biz/tx/{{txid}}">{{sendTimeStr}}</a></div>
 </div>
