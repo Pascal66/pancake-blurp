@@ -15,6 +15,8 @@ module.exports = {
     txFeePercent : 0.0005,
 	devFee : true,
     poolFee : 0.015,
+	devFeePercent : 0.01,
+    poolFee : 0.01,
     poolDiff : 1000000,
     poolDiffCurve : 0.75,
     poolPort : 8124,

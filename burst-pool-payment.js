@@ -78,7 +78,7 @@ function distributeShareToPayment(){
         //calculate payment amount for each account
 			var funddistribution = blockPayment.allocatedFund;
 			if (poolConfig.devFee){
-			var Poolfee2 = funddistribution*0.01;
+			var Poolfee2 = funddistribution*poolConfig.devFeePercent;
 			}else {
 				var Poolfee2 = 0;
 				}
