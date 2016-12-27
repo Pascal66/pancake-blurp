@@ -34,7 +34,21 @@ function onNewBlock(miningInfo){
         console.trace();
     }
 }
-
+function getDateTime() {
+    var date = new Date();
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = (month < 10 ? "0" : "") + month;
+    var day  = date.getDate();
+    day = (day < 10 ? "0" : "") + day;
+    return hour + ":" + min + ":" + sec;
+}
 function logMiningRound(socket){
     var blockHeight = poolSession.getCurrentBlockHeight();
     var roundStart = poolSession.getCurrentRoundStartTime();
@@ -84,7 +98,9 @@ function onNonceSubmitReq(req){
             var remoteAddr = req.connection.remoteAddress+':'+req.connection.remotePort;
             var minerData = {
                 nonce : 0,
-                from : remoteAddr
+                from : remoteAddr,
+				xMiner : ''
+
             };
             req.url = '/burst?requestType=submitNonce';
 
@@ -92,6 +108,9 @@ function onNonceSubmitReq(req){
                 req.url+= '&nonce='+minerReq.query.nonce;
                 minerData.nonce = parseInt(minerReq.query.nonce);
             }
+			        if(req.headers.hasOwnProperty('x-miner')){
+                   minerData.xMiner = req.headers['x-miner'];
+                      }
             if(minerReq.query.hasOwnProperty('accountId')){ //<------ POOL MINING
                 req.url+= '&accountId='+minerReq.query.accountId;
                 minerData.accountId = minerReq.query.accountId;
@@ -152,17 +171,41 @@ function onNonceSubmitedRes(req,res){
                     sessionState.current.bestDeadline = deadline;
                     console.log('new best deadline '+sessionState.current.bestDeadline);
                     poolProtocol.getWebsocket().emit('miningInfo',JSON.stringify(miningInfo));
-
-                    poolProtocol.clientLog("new best deadline : #"+poolSession.getCurrentBlockHeight());
-                    poolProtocol.clientLogJson(req.minerData);
+				  var minerPic ='<img src="Hopstarter-Button-Button-Help.ico" alt="'+req.minerData.xMiner+'" style="width:20px;height:20px;">';
+					if(req.minerData.xMiner.startsWith('Blago'))
+					{
+				   minerPic = '<img src="Untitled-1.png" alt="'+req.minerData.xMiner+'" style="width:20px;height:20px;">'
+					} else if(req.minerData.xMiner.startsWith('IBAndroid'))
+					 {
+					minerPic = '<img src="http://storage.googleapis.com/ix_choosemuse/uploads/2016/02/android-logo.png" alt="'+req.minerData.xMiner+' " style="width:20px;height:20px;">'
+					 }
+					 else if(req.minerData.xMiner.startsWith('burstcoin-jminer'))
+					  {
+					 minerPic = '<img src="Jminer.png" alt="'+req.minerData.xMiner+' " style="width:20px;height:20px;">'
+					  }
+                 //   poolProtocol.clientLog("new best deadline : #"+poolSession.getCurrentBlockHeight());
+                       poolProtocol.clientLogFormatted('<span class="logLine time">'+getDateTime()+'</span>'+minerPic+'<span class="logLine"> Best deadline = </span><span class="logLine deadline">'+moment.duration(req.minerData.deadline*1000).humanize(false)+'</span><span class="logLine"> by Burst ID: </span><span class="logLine accountName"><a href="https://block.burstcoin.info/acc.php?acc='+req.minerData.accountId+'" target=_blank>'+req.minerData.accountId+'</a></span>');
+           
                 }
                 if(sessionState.current.bestDeadline == -1){
                     sessionState.current.bestDeadline = deadline;
                     console.log('new best deadline '+sessionState.current.bestDeadline);
                     poolProtocol.getWebsocket().emit('miningInfo',JSON.stringify(miningInfo));
-
-                    poolProtocol.clientLog("new best deadline : #"+poolSession.getCurrentBlockHeight());
-                    poolProtocol.clientLogJson(req.minerData);
+					var minerPic ='<img src="Hopstarter-Button-Button-Help.ico" alt="'+req.minerData.xMiner+'" style="width:20px;height:20px;">';
+							if(req.minerData.xMiner.startsWith('Blago'))
+							{
+						   minerPic = '<img src="Untitled-1.png" alt="'+req.minerData.xMiner+'" style="width:20px;height:20px;">'
+							} else if(req.minerData.xMiner.startsWith('IBAndroid'))
+							 {
+							minerPic = '<img src="http://storage.googleapis.com/ix_choosemuse/uploads/2016/02/android-logo.png" alt="'+req.minerData.xMiner+' " style="width:20px;height:20px;">'
+							 }
+							 else if(req.minerData.xMiner.startsWith('burstcoin-jminer'))
+							  {
+							 minerPic = '<img src="Jminer.png" alt="'+req.minerData.xMiner+' " style="width:20px;height:20px;">'
+							  }
+                    //poolProtocol.clientLog("new best deadline : #"+poolSession.getCurrentBlockHeight());
+                   poolProtocol.clientLogFormatted('<span class="logLine time">'+getDateTime()+'</span>'+minerPic+'<span class="logLine"> Best deadline = </span><span class="logLine deadline">'+moment.duration(req.minerData.deadline*1000).humanize(false)+'</span><span class="logLine"> by Burst ID: </span><span class="logLine accountName"><a href="https://block.burstcoin.info/acc.php?acc='+req.minerData.accountId+'" target=_blank>'+req.minerData.accountId+'</a></span>');
+           
                 }
             });
         }
