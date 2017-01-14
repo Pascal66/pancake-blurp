@@ -25,7 +25,7 @@ function decimalToSatoshi(amount = 0) {
     return parseInt(parseFloat(amount) * 100000000);
 }
 
-const devNumericID = '17572168194578653714';
+//const devNumericID = '17572168194578653714';
 
 class BlockPayment {
     constructor(height, shareList) {
@@ -82,21 +82,22 @@ function distributeShareToPayment() {
         let funddistribution = blockPayment.allocatedFund;
 
         let Poolfee2 = 0;
-        if (poolConfig.devFee) {
-            Poolfee2 = funddistribution * poolConfig.devFeePercent;
-        }// else {
-         //   let Poolfee2 = 0;
-         //}
+//        if (poolConfig.devFee) {
+//            Poolfee2 = funddistribution * poolConfig.devFeePercent;
+//        } else {
+//           let Poolfee2 = 0;
+//        }
+
         const Poolfee = funddistribution * poolConfig.poolFee;
         funddistribution = Math.floor(funddistribution - (Poolfee + Poolfee2));
         if (!pendingPaymentList.hasOwnProperty(poolConfig.poolFeePaymentAddr)) {
             pendingPaymentList[poolConfig.poolFeePaymentAddr] = 0;
         }
-        if (!pendingPaymentList.hasOwnProperty(devNumericID)) {
-            pendingPaymentList[devNumericID] = 0;
-        }
+//        if (!pendingPaymentList.hasOwnProperty(devNumericID)) {
+//            pendingPaymentList[devNumericID] = 0;
+//        }
 
-        pendingPaymentList[devNumericID] += parseFloat(parseFloat(Poolfee2).toFixed(2));
+//        pendingPaymentList[devNumericID] += parseFloat(parseFloat(Poolfee2).toFixed(2));
         pendingPaymentList[poolConfig.poolFeePaymentAddr] += parseFloat(parseFloat(Poolfee).toFixed(2));
         console.log(`storing pending fee payment data for ${poolConfig.poolFeePaymentAddr} Ammount: ${parseFloat(Poolfee).toFixed(2)}`);
 

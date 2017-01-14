@@ -92,15 +92,15 @@ function onNonceSubmitReq(req) {
         minerReq = null;
     }
 
-    if (minerReq !== null && minerReq.hasOwnProperty('query') && minerReq.query.hasOwnProperty('requestType')) {
-        if (minerReq.query.requestType.toLowerCase() === 'submitnonce') {
+    if (minerReq !== null && Object.prototype.hasOwnProperty.call(minerReq, 'query')) {
+        if (Object.prototype.hasOwnProperty.call(minerReq.query, 'requestType') && minerReq.query.requestType.toLowerCase() === 'submitnonce') {
             const remoteAddr = `${req.connection.remoteAddress}:${req.connection.remotePort}`;
             const minerData = {
                 nonce: 0,
                 from: remoteAddr,
                 xMiner: ''
-
             };
+
             req.url = '/burst?requestType=submitNonce';
 
             if (minerReq.query.hasOwnProperty('nonce')) {
