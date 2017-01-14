@@ -19,12 +19,12 @@
     "express": "4.x",
     "compression": "*",
     "moment": "*",
-    "body-parser": "*",
+    "body-parser": "*"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
     "gulp-sourcemaps": "latest",
     "gulp-babel": "latest",
     "require-dir": "latest"
-  },
-  "devDependencies": {
-    "gulp": "^3.9.1"
   }
 }

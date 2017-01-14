@@ -1,0 +1,48 @@
+{
+  "version": 3,
+  "sources": [
+    "burst-pool-logger.js"
+  ],
+  "names": [
+    "fs",
+    "require",
+    "enabled",
+    "toConsole",
+    "toFile",
+    "toGeneralFile",
+    "generalLogFilename",
+    "TimeStamp",
+    "date",
+    "Date",
+    "hour",
+    "getHours",
+    "min",
+    "getMinutes",
+    "sec",
+    "getSeconds",
+    "year",
+    "getFullYear",
+    "month",
+    "getMonth",
+    "day",
+    "getDate",
+    "TimeStampFile",
+    "write",
+    "name",
+    "text",
+    "appendFile",
+    "err",
+    "console",
+    "log",
+    "writeDateLog",
+    "exists",
+    "writeFile",
+    "module",
+    "exports"
+  ],
+  "mappings": "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",
+  "file": "burst-pool-logger.js",
+  "sourcesContent": [
+    "var fs = require('fs');\r\n\r\nvar enabled = false;\r\nvar toConsole = false;\r\nvar toFile = true;\r\nvar toGeneralFile = false;\r\nvar generalLogFilename = 'log_general.txt';\r\n\r\nfunction TimeStamp() {\r\n    var date = new Date();\r\n    var hour = date.getHours();\r\n    hour = (hour < 10 ? \"0\" : \"\") + hour;\r\n    var min = date.getMinutes();\r\n    min = (min < 10 ? \"0\" : \"\") + min;\r\n    var sec = date.getSeconds();\r\n    sec = (sec < 10 ? \"0\" : \"\") + sec;\r\n    var year = date.getFullYear();\r\n    var month = date.getMonth() + 1;\r\n    month = (month < 10 ? \"0\" : \"\") + month;\r\n    var day = date.getDate();\r\n    day = (day < 10 ? \"0\" : \"\") + day;\r\n    return year + \"-\" + month + \"-\" + day + \"_\" + hour + \"-\" + min + \"-\" + sec;\r\n}\r\n\r\nfunction TimeStampFile() {\r\n    var date = new Date();\r\n    var hour = date.getHours();\r\n    hour = (hour < 10 ? \"0\" : \"\") + hour;\r\n    var min = date.getMinutes();\r\n    min = (min < 10 ? \"0\" : \"\") + min;\r\n    var sec = date.getSeconds();\r\n    sec = (sec < 10 ? \"0\" : \"\") + sec;\r\n    var year = date.getFullYear();\r\n    var month = date.getMonth() + 1;\r\n    month = (month < 10 ? \"0\" : \"\") + month;\r\n    var day = date.getDate();\r\n    day = (day < 10 ? \"0\" : \"\") + day;\r\n    return day + \"-\" + month + \"-\" + year;\r\n}\r\n\r\nfunction write(name, text) {\r\n    if (enabled) {\r\n        if (toFile) {\r\n            fs.appendFile('log_' + name + '.txt', TimeStamp() + ' ' + text + '\\n', function (err) {\r\n                if (err) throw err;\r\n            });\r\n        }\r\n        if (toGeneralFile) {\r\n            fs.appendFile(generalLogFilename, TimeStamp() + ' (' + name + ') ' + text + '\\n', function (err) {\r\n                if (err) throw err;\r\n            });\r\n        }\r\n        if (toConsole) {\r\n            console.log('(logger.' + name + \") \" + text)\r\n        }\r\n    }\r\n}\r\n\r\nfunction writeDateLog(text) {\r\n    if (enabled) {\r\n\r\n        if (toFile) {\r\n            fs.exists('./Logs/log_' + TimeStampFile() + '.txt', function (exists) {\r\n                if (exists) {\r\n                    fs.appendFile('./Logs/log_' + TimeStampFile() + '.txt', TimeStamp() + ' ' + text + '\\n', function (err) {\r\n                        if (err) throw err;\r\n                    });\r\n                } else {\r\n                    fs.writeFile('./Logs/log_' + TimeStampFile() + '.txt', TimeStamp() + ' ' + text + '\\n', function (err) {\r\n                        if (err) {\r\n                            return console.log(err);\r\n                        }\r\n\r\n                        //  console.log(\"The file was saved!\");\r\n                    });\r\n                }\r\n            });\r\n        }\r\n    }\r\n}\r\n\r\nmodule.exports = {\r\n    write: write,\r\n    writeDateLog: writeDateLog,\r\n    TimeStamp: TimeStamp\r\n};\r\n"
+  ]
+}
