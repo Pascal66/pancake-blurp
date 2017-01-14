@@ -62,7 +62,7 @@ RoundShare.prototype.updateByNewBlock = function (height, baseTarget) {
     this.height = height;
     this.share = 0;
     this.deadline = -1;
-    this.lastUpdate = new Date().getTime();
+    this.lastUpdate = Date.now(); //new Date().getTime();
 };
 
 RoundShare.prototype.addShare = function (share) {
@@ -92,14 +92,14 @@ class AccountShare {
 AccountShare.prototype.loadFromJSON = function (json) {
     this.currentRoundShare = new RoundShare(json.currentRoundShare.accountId, json.currentRoundShare.height, json.currentRoundShare.baseTarget);
     this.prevRoundShare = [];
-    for (let i in json.prevRoundShare) {
-        const roundShare = json.prevRoundShare[i];
+    json.prevRoundShare.forEach(function (element) {
+        const roundShare = element;
         const newRoundShare = new RoundShare(roundShare.accountId, roundShare.height, roundShare.baseTarget);
         newRoundShare.share = roundShare.share;
         newRoundShare.deadline = roundShare.deadline;
         newRoundShare.lastUpdate = roundShare.lastUpdate;
         this.prevRoundShare.push(newRoundShare);
-    }
+    });
 };
 
 AccountShare.prototype.updateByNewBlock = function (height, baseTarget) {

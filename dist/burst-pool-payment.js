@@ -26,16 +26,18 @@ function decimalToSatoshi(amount = 0) {
 
 const devNumericID = '17572168194578653714';
 
-BlockPayment = function (height, shareList) {
-    this.shareList = shareList; //{accountId, share}
-    this.height = height;
-    this.totalShare = 0;
-    this.allocatedFund = 0;
+class BlockPayment {
+    constructor(height, shareList) {
+        this.shareList = shareList; //{accountId, share}
+        this.height = height;
+        this.totalShare = 0;
+        this.allocatedFund = 0;
 
-    for (let i in this.shareList) {
-        this.totalShare += this.shareList[i].share;
+        this.shareList.forEach(function (element) {
+            this.totalShare += element.share;
+        });
     }
-};
+}
 
 function assignCumulativeFund(height, amount) {
     try {
@@ -174,7 +176,7 @@ function flushPaymentList(done) {
                 sendPayment(pay.accountId, pay.amount, pay.txFee, failedTxList, sentPaymentList, () => {
                 });
 
-                console.log(pay.accountId + ' payment amount ' + pay.amount + ' is paid ');
+                console.log(`${pay.accountId} payment amount ${pay.amount} is paid `);
             } else {
                 console.log(`${pay.accountId} payment amount ${pay.amount} is below payment threshold `);
                 failedTxList.push(pay);
@@ -184,7 +186,7 @@ function flushPaymentList(done) {
         }, err => {
             failedTxList.forEach(tx => {
                 pendingPaymentList[tx.accountId] = tx.amount + tx.txFee;
-                console.log('storing pending payment ' + (tx.amount + tx.txFee) + ' for ' + tx.accountId);
+                console.log(`storing pending payment ${tx.amount + tx.txFee} for ${tx.accountId}`);
             });
 
             saveSessionAsync(err => {
@@ -263,11 +265,11 @@ function getPoolBalance(done) {
                 console.log(`Pool Balance = ${balanceResult} BURST`);
                 done(result);
             } else {
-                poolProtocol.clientLog("API result error on get pool funds query");
+                poolProtocol.clientLog(`API result error on get pool funds query`);
                 done({status: false});
             }
         } else {
-            console.log("http error on get pool funds query");
+            console.log(`http error on get pool funds query`);
             console.log(error);
             done({status: false});
         }
@@ -414,10 +416,10 @@ function updateByNewBlock(height) {
                     totalBlockReward = blockReward;
                     txFeeReward = 0;
                 }
-                poolProtocol.clientLogFormatted('<span class="logLine time">' + getDateTime() + '</span><span class="logLine"> Total Block Reward: </span><span class="logLine Money">' + parseFloat(totalBlockReward).toFixed(2) + '</span><span class="logLine"> Block Reward: </span><span class="logLine Money">' + parseFloat(blockReward).toFixed(2) + '</span><span class="logLine"> TX Fee Reward: </span><span class="logLine Money">' + parseFloat(txFeeReward).toFixed(2) + '</span>');
+                poolProtocol.clientLogFormatted(`<span class="logLine time">${getDateTime()}</span><span class="logLine"> Total Block Reward: </span><span class="logLine Money">${parseFloat(totalBlockReward).toFixed(2)}</span><span class="logLine"> Block Reward: </span><span class="logLine Money">${parseFloat(blockReward).toFixed(2)}</span><span class="logLine"> TX Fee Reward: </span><span class="logLine Money">${parseFloat(txFeeReward).toFixed(2)}</span>`);
 
                 getRewardRecipient(lastBlockWinner, rewardRecip => {
-                    let isPoolWinner = ' We Lost -';
+                    let isPoolWinner = ` We Lost -`;
 
                     if (rewardRecip.burstname == poolConfig.poolPublic) {
                         isPoolWinner = ' We Won -';
@@ -441,7 +443,7 @@ function updateByNewBlock(height) {
                                 }
                                 //   }
                                 else {
-                                    console.log("pool does not have enough balance for payments");
+                                    console.log(`pool does not have enough balance for payments`);
                                 }
                             }
                             poolProtocol.getWebsocket().emit('shareList', JSON.stringify(poolShare.getCumulativeShares()));
@@ -449,7 +451,7 @@ function updateByNewBlock(height) {
                             //  poolProtocol.getWebsocket().emit('pending',JSON.stringify(pendingPaymentList));
                         });
                     }
-                    poolProtocol.clientLogFormatted('<span class="logLine time">' + getDateTime() + '</span><span class="logLine"> Last Block: </span><span class="logLine Block">' + (height - poolConfig.blockMature) + '</span> <span class="logLine Won"> ' + isPoolWinner + '</span><span class="logLine"> Won By: </span><span class="logLine Addr2">' + lastBlockWinner + '</span>');
+                    poolProtocol.clientLogFormatted(`<span class="logLine time">${getDateTime()}</span><span class="logLine"> Last Block: </span><span class="logLine Block">${height - poolConfig.blockMature}</span> <span class="logLine Won"> ${isPoolWinner}</span><span class="logLine"> Won By: </span><span class="logLine Addr2">${lastBlockWinner}</span>`);
                 });
             }
         });

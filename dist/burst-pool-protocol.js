@@ -233,14 +233,14 @@ function clientUnicastLogJson(socket, json) {
 }
 
 function clientLog(str) {
-    ioSocket.emit('log', '<span class="json-text">' + str + '</span>');
+    ioSocket.emit('log', `<span class="json-text">${str}</span>`);
     if (poolConfig.logWebsocketToConsole === true) {
         console.log(str);
     }
 }
 
 function clientUnicastLog(socket, str) {
-    socket.emit('log', '<span class="json-text">' + str + '</span>');
+    socket.emit('log', `<span class="json-text">${str}</span>`);
     if (poolConfig.logWebsocketToConsole === true) {
         console.log(str);
     }

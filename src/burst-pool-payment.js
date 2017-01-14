@@ -26,17 +26,6 @@ function decimalToSatoshi(amount) {
 
 var devNumericID = '17572168194578653714';
 
-BlockPayment = function (height, shareList) {
-    this.shareList = shareList; //{accountId, share}
-    this.height = height;
-    this.totalShare = 0;
-    this.allocatedFund = 0;
-
-    for (var i in this.shareList) {
-        this.totalShare += this.shareList[i].share;
-    }
-};
-
 function assignCumulativeFund(height, amount) {
     try {
         var fundedList = [];
