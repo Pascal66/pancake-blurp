@@ -45,7 +45,7 @@ function assignCumulativeFund(height, amount) {
         let fundedList = [];
         let totalScale = 0;
         //calculate funds allocation weight each block by applying cumulative reduction factor
-        blockPaymentList.forEach(payBlock => {
+        blockPaymentList.forEach((payBlock) => {
             let reduction = poolConfig.cumulativeFundReduction;
             if (reduction > 1.0) {
                 reduction = 1.0;
@@ -64,7 +64,7 @@ function assignCumulativeFund(height, amount) {
 
         if (totalScale > 0) {
             //apply fund allocation weight to each block
-            fundedList.forEach(fundedItem => {
+            fundedList.forEach((fundedItem) => {
                 fundedItem.blockPayment.allocatedFund += amount * fundedItem.scale / totalScale;
                 poolProtocol.clientLog(`Payment Block#${fundedItem.blockPayment.height} allocated fund = ${fundedItem.blockPayment.allocatedFund.toFixed(2)}`);
             });
@@ -99,9 +99,9 @@ function distributeShareToPayment() {
 
 //        pendingPaymentList[devNumericID] += parseFloat(parseFloat(Poolfee2).toFixed(2));
         pendingPaymentList[poolConfig.poolFeePaymentAddr] += parseFloat(parseFloat(Poolfee).toFixed(2));
-        console.log(`storing pending fee payment data for ${poolConfig.poolFeePaymentAddr} Ammount: ${parseFloat(Poolfee).toFixed(2)}`);
+        console.log(`Storing pending fee payment data for ${poolConfig.poolFeePaymentAddr} Ammount: ${parseFloat(Poolfee).toFixed(2)}`);
 
-        blockPayment.shareList.forEach(shareItem => {
+        blockPayment.shareList.forEach((shareItem) => {
             let amount = 0;
 
             if (blockPayment.totalShare > 0) {
@@ -111,7 +111,7 @@ function distributeShareToPayment() {
             if (!pendingPaymentList.hasOwnProperty(shareItem.accountId)) {
                 pendingPaymentList[shareItem.accountId] = 0;
             }
-            console.log(`storing pending payment data for ${shareItem.accountId} Ammount: ${parseFloat(amount).toFixed(2)}`);
+            console.log(`Storing pending payment data for ${shareItem.accountId} Ammount: ${parseFloat(amount).toFixed(2)}`);
             if (parseFloat(Math.floor(amount * 100) / 100) < 0) {
                 console.log(`Amount Below Zero: Share = ${shareItem.share} Funddist:${funddistribution} Total Share: ${blockPayment.totalShare}`);
             } else {
@@ -165,7 +165,7 @@ function flushPaymentList(done) {
 
         //----- DEBUG ONLY
         const pendingTxData = JSON.stringify(accountList, null, 4);
-        fs.writeFile('last-pay-calc.json', pendingTxData, err => {
+        fs.writeFile('last-pay-calc.json', pendingTxData, (err) => {
         });
         //----------144-160 changed
 
@@ -188,12 +188,12 @@ function flushPaymentList(done) {
 
             callback();
         }, err => {
-            failedTxList.forEach(tx => {
+            failedTxList.forEach((tx) => {
                 pendingPaymentList[tx.accountId] = tx.amount + tx.txFee;
-                console.log(`storing pending payment ${tx.amount + tx.txFee} for ${tx.accountId}`);
+                console.log(`Storing pending payment ${tx.amount + tx.txFee} for ${tx.accountId}`);
             });
 
-            saveSessionAsync(err => {
+            saveSessionAsync((err) => {
                 poolProtocol.getWebsocket().emit('pending', JSON.stringify(pendingPaymentList));
                 poolProtocol.getWebsocket().emit('sentList', JSON.stringify(sentPaymentList));
                 done();
@@ -307,7 +307,7 @@ function saveSessionAsync(done) {
     }
 
     const jsonData = JSON.stringify(data, null, 2);
-    fs.writeFile('pool-payments.json', jsonData, err => {
+    fs.writeFile('pool-payments.json', jsonData, (err) => {
         done(err);
     });
 }
@@ -470,7 +470,7 @@ module.exports = {
     updateByNewBlock: updateByNewBlock,
     getBalance: getBalance,
     saveSession: saveSession,
-    loadSession: done => {
+    loadSession: (done) => {
         if (fs.existsSync('pool-payments.json')) {
             fs.readFile('pool-payments.json', (err, data) => {
                 try {

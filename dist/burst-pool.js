@@ -12,7 +12,7 @@ const poolPayment = require('./burst-pool-payment');
 const poolProtocol = require('./burst-pool-protocol');
 
 function onNewBlock(miningInfo) {
-    poolProtocol.clientLog("new block :");
+    poolProtocol.clientLog(`New block :`);
     poolProtocol.clientLogJson(miningInfo);
 
     try {
@@ -103,14 +103,14 @@ function onNonceSubmitReq(req) {
 
             req.url = '/burst?requestType=submitNonce';
 
-            if (minerReq.query.hasOwnProperty('nonce')) {
+            if (Object.prototype.hasOwnProperty.call(minerReq.query, 'nonce')) {
                 req.url += `&nonce=${minerReq.query.nonce}`;
                 minerData.nonce = parseInt(minerReq.query.nonce);
             }
             if (req.headers.hasOwnProperty('x-miner')) {
                 minerData.xMiner = req.headers['x-miner'];
             }
-            if (minerReq.query.hasOwnProperty('accountId')) {
+            if (Object.prototype.hasOwnProperty.call(minerReq.query, 'accountId')) {
                 //<------ POOL MINING
                 req.url += `&accountId=${minerReq.query.accountId}`;
                 minerData.accountId = minerReq.query.accountId;
@@ -118,7 +118,7 @@ function onNonceSubmitReq(req) {
                 minerReq.query.secretPhrase = config.poolPvtKey;
                 req.url += `&secretPhrase=${config.poolPvtKey}`;
             } else {
-                if (minerReq.query.hasOwnProperty('secretPhrase')) {
+                if (Object.prototype.hasOwnProperty.call(minerReq.query, 'secretPhrase')) {
                     //<----- SOLO MINING
                     const urlPhrase = minerReq.query.secretPhrase.replace(/%2B|%2b/g, '+');
                     req.url += `&secretPhrase=${urlPhrase}`;
@@ -166,7 +166,7 @@ function onNonceSubmitedRes(req, res) {
 
                 if (sessionState.current.bestDeadline > deadline) {
                     sessionState.current.bestDeadline = deadline;
-                    console.log('new best deadline ' + sessionState.current.bestDeadline);
+                    console.log(`New best deadline ${sessionState.current.bestDeadline}`);
                     poolProtocol.getWebsocket().emit('miningInfo', JSON.stringify(miningInfo));
                     let minerPic = `<img src="Hopstarter-Button-Button-Help.ico" alt="${req.minerData.xMiner}" style="width:20px;height:20px;">`;
                     if (req.minerData.xMiner.startsWith('Blago')) {
@@ -181,7 +181,7 @@ function onNonceSubmitedRes(req, res) {
                 }
                 if (sessionState.current.bestDeadline === -1) {
                     sessionState.current.bestDeadline = deadline;
-                    console.log('new best deadline ' + sessionState.current.bestDeadline);
+                    console.log(`New best deadline ${sessionState.current.bestDeadline}`);
                     poolProtocol.getWebsocket().emit('miningInfo', JSON.stringify(miningInfo));
                     let minerPic = `<img src="Hopstarter-Button-Button-Help.ico" alt="${req.minerData.xMiner}" style="width:20px;height:20px;">`;
                     if (req.minerData.xMiner.startsWith('Blago')) {
@@ -212,7 +212,7 @@ function onNewClientConnected(socket) {
     const clientIp = socket.request.connection.remoteAddress;
     let clientPort = socket.request.connection.remotePort;
 
-    socket.on('chat', msg => {
+    socket.on('chat', (msg) => {
         onWebsocketClientChat(clientIp, msg);
     });
 
@@ -248,7 +248,7 @@ function saveSession() {
 function initPool(walletNdx) {
     poolSession.setWalletNdx(walletNdx);
     poolSession.init(() => {
-        async.parallel([callback => {
+        async.parallel([(callback) => {
             poolPayment.loadSession(() => {
                 callback();
             });
@@ -260,7 +260,7 @@ function initPool(walletNdx) {
             poolProtocol.start(onNonceSubmitReq, onNonceSubmitedRes, onNewClientConnected);
             setInterval(saveSession, 60000);
             setInterval(() => {
-                poolSession.getMiningInfo(result => {
+                poolSession.getMiningInfo((result) => {
                     if (result.status === true) {
                         onMiningInfoUpdate(result.msg);
                     }

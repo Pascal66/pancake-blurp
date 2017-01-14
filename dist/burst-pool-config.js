@@ -1,9 +1,16 @@
 module.exports = {
-    wallets: [{
-        walletIP: '127.0.0.1',
-        walletPort: 8125,
-        walletUrl: 'http://127.0.0.1:8125'
-    }],
+    wallets: [
+        {
+            walletIP: '127.0.0.1',
+            walletPort: 8125,
+            walletUrl: 'http://127.0.0.1:8125'
+        }
+//        ,{
+//            walletIP: 'wallet.burst-team.us',
+//            walletPort: 8125,
+//            walletUrl: 'https://wallet.burst-team.us:8125'
+//        }
+    ],
     redirection: {
         enabled: false,
         target: 'http://lhc.ddns.net:8124'

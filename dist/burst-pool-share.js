@@ -98,7 +98,7 @@ class AccountShare {
     loadFromJSON/* = function*/(json) {
         this.currentRoundShare = new RoundShare(json.currentRoundShare.accountId, json.currentRoundShare.height, json.currentRoundShare.baseTarget);
         this.prevRoundShare = [];
-        json.prevRoundShare.forEach(function (element) {
+        json.prevRoundShare.forEach((element) => {
             const roundShare = element;
             const newRoundShare = new RoundShare(roundShare.accountId, roundShare.height, roundShare.baseTarget);
             newRoundShare.share = roundShare.share;
@@ -169,7 +169,7 @@ class PoolShare {
         let share;
         let poolShare;
         let userShare = 0;
-        if (this.accountShareIdIndex.hasOwnProperty(accountId)) {
+        if (Object.prototype.hasOwnProperty.call(this.accountShareIdIndex, accountId)) {
             share = this.accountShareIdIndex[accountId].updateByNewDeadline(deadline);
             userShare = this.accountShareIdIndex[accountId].getShare();
             poolShare = share * config.poolFee;
@@ -261,7 +261,7 @@ class PoolShare {
         let cumulativeShare = {};
         for (let accountId in blockShareList) {
             const shareList = blockShareList[accountId];
-            shareList.forEach(share => {
+            shareList.forEach((share) => {
                 if (cumulativeShare.hasOwnProperty(accountId)) {
                     cumulativeShare[accountId].share += share.share;
                     cumulativeShare[accountId].roundCount++;
@@ -283,7 +283,7 @@ class PoolShare {
 
     /*PoolShare.prototype.*/
     getAccountShare/* = function*/(accountId) {
-        if (this.accountShareIdIndex.hasOwnProperty(accountId)) {
+        if (Object.prototype.hasOwnProperty.call(this.accountShareIdIndex, accountId)) {
             const accountShare = this.accountShareIdIndex[accountId];
             return accountShare.currentRoundShare;
         }
@@ -292,7 +292,7 @@ class PoolShare {
 
     /*PoolShare.prototype.*/
     deleteAccount/* = function*/(accountId) {
-        if (this.accountShareIdIndex.hasOwnProperty(accountId)) {
+        if (Object.prototype.hasOwnProperty.call(this.accountShareIdIndex, accountId)) {
             delete this.accountShareIdIndex[accountId];
             const ndx = this.accountShare.indexOf(accountId);
             if (ndx >= 0) {
@@ -303,7 +303,7 @@ class PoolShare {
 
     /*PoolShare.prototype.*/
     deleteAccountShare/* = function*/(accountId) {
-        if (this.accountShareIdIndex.hasOwnProperty(accountId)) {
+        if (Object.prototype.hasOwnProperty.call(this.accountShareIdIndex, accountId)) {
             const accountShare = this.accountShareIdIndex[accountId];
             accountShare.prevRoundShare = [];
         }
@@ -315,7 +315,7 @@ class PoolShare {
         for (let accountId in cumulativeShare) {
             if (cumulativeShare[accountId].share < shareAmount && cumulativeShare[accountId].roundCount > numOfRound) {
                 this.deleteAccount(accountId);
-                console.log(`deleted account ${accountId} because of low share`);
+                console.log(`Deleted account ${accountId} because of low share`);
             }
         }
     }
@@ -330,7 +330,7 @@ class PoolShare {
 
     /*PoolShare.prototype.*/
     addShareToAccount/* = function*/(accountId, share) {
-        if (this.accountShareIdIndex.hasOwnProperty(accountId)) {
+        if (Object.prototype.hasOwnProperty.call(this.accountShareIdIndex, accountId)) {
             this.accountShareIdIndex[accountId].addShare(share);
         } else {
             if (poolSession.isAccountIdAssignedToPool(accountId)) {
@@ -344,7 +344,7 @@ class PoolShare {
 
     /*PoolShare.prototype.*/
     substractShareFromAccount/* = function*/(accountId, share) {
-        if (this.accountShareIdIndex.hasOwnProperty(accountId)) {
+        if (Object.prototype.hasOwnProperty.call(this.accountShareIdIndex, accountId)) {
             this.accountShareIdIndex[accountId].substractShare(share);
         }
     }
@@ -362,36 +362,36 @@ module.exports = {
     updateByNewDeadline: (accountId, deadline) => {
         poolShare.updateByNewDeadline(accountId, deadline);
     },
-    getBlockShare: height => poolShare.getBlockShare(height),
+    getBlockShare: (height) => poolShare.getBlockShare(height),
     getShares: () => poolShare.getShares(),
     getCumulativeShares: () => poolShare.getCumulativeShares(),
-    getAccountShare: accountId => poolShare.getAccountShare(accountId),
+    getAccountShare: (accountId) => poolShare.getAccountShare(accountId),
     saveSession: () => {
         const poolShareData = JSON.stringify(poolShare, null, 2);
         fs.writeFileSync('pool-share.json', poolShareData);
     },
     getCurrentRoundShares: () => poolShare.getCurrentRoundShares(),
-    deleteAccountShare: accountId => {
+    deleteAccountShare: (accountId) => {
         poolShare.deleteAccountShare(accountId);
     },
-    deleteRoundShareByDistance: distance => {
+    deleteRoundShareByDistance: (distance) => {
         poolShare.deleteRoundShareByDistance(distance);
     },
     deleteAccountShareBelowThresshold: (shareAmount, numOfRound) => {
         poolShare.deleteAccountShareBelowThresshold(shareAmount, numOfRound);
     },
-    deleteAccount: accountId => {
+    deleteAccount: (accountId) => {
         poolShare.deleteAccount(accountId);
     },
-    loadSession: done => {
+    loadSession: (done) => {
         if (fs.existsSync('pool-share.json')) {
             fs.readFile('pool-share.json', (err, data) => {
                 try {
                     const loadedData = JSON.parse(data);
-                    if (loadedData.hasOwnProperty('accountShare')) {
+                    if (Object.prototype.hasOwnProperty.call(loadedData, 'accountShare')) {
                         poolShare.accountShare = loadedData.accountShare;
                     }
-                    if (loadedData.hasOwnProperty('accountShareIdIndex')) {
+                    if (Object.prototype.hasOwnProperty.call(loadedData, 'accountShareIdIndex')) {
                         for (let accountId in loadedData.accountShareIdIndex) {
                             const accountShare = loadedData.accountShareIdIndex[accountId];
                             poolShare.accountShareIdIndex[accountId] = new AccountShare(0, 0, 0);

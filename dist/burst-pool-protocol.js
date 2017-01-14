@@ -60,7 +60,7 @@ function doRedirection(req, body) {
 
 function transformRequest(req, res, nonceSubmitReqHandler) {
     let reqBody = '';
-    req.on('data', reqChunk => {
+    req.on('data', (reqChunk) => {
         if (req.isSubmitNonce === true) {
             reqBody += reqChunk;
             if (reqBody.length > 1024) {
@@ -85,7 +85,7 @@ function transformRequest(req, res, nonceSubmitReqHandler) {
 function transformResponse(req, res, nonceSubmitedHandler) {
     let recvBuffer = '';
     const _write = res.write;
-    res.write = data => {
+    res.write = (data) => {
         if (typeof data !== 'undefined') {
             recvBuffer += data.toString();
         }

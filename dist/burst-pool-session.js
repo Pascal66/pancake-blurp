@@ -289,7 +289,7 @@ module.exports = {
     },
     getMiningInfoCache: () => miningInfoCache,
     getCurrentRoundStartTime: () => sessionState.current.startTime,
-    setWalletNdx: ndx => {
+    setWalletNdx: (ndx) => {
         sessionState.walletIndex = ndx;
     },
     getWalletNdx: () => {
@@ -314,7 +314,7 @@ module.exports = {
                     callback();
                 });
             }, callback => {
-                getMiningInfo(result => {
+                getMiningInfo((result) => {
                     const currentTime = Date.now(); //new Date().getTime();
                     sessionState.current.blockHeight = result.msg.height;
                     sessionState.current.roundStartTime = currentTime;
@@ -322,7 +322,7 @@ module.exports = {
                     callback();
                 });
             }, callback => {
-                updateCurrentBlockState(status => {
+                updateCurrentBlockState((status) => {
                     callback();
                 });
             }], (err, results) => {
@@ -334,7 +334,7 @@ module.exports = {
         const jsonData = JSON.stringify(sessionState, null, 2);
         fs.writeFileSync('pool-session.json', jsonData);
     },
-    loadSession: done => {
+    loadSession: (done) => {
         if (fs.existsSync('pool-session.json')) {
             fs.readFile('pool-session.json', (err, data) => {
                 try {
