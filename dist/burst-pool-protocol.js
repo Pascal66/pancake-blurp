@@ -24,7 +24,7 @@ function clientLogFormatted(str) {
 function initWalletProxy() {
     for (let i = 0; i < poolConfig.wallets.length; i++) {
         poolConfig.wallets[i].proxy = httpProxy.createProxyServer({});
-        poolConfig.wallets[i].proxy.on('error', function (err, req, res) {
+        poolConfig.wallets[i].proxy.on('error', (err, req, res) => {
             console.log(err);
             res.writeHead(500, {'Content-Type': 'text/plain'});
             res.end('Internal Server Error, or Resource Temporary Unavailable');
@@ -52,14 +52,14 @@ function doRedirection(req, body) {
             url: redirectUrl,
             method: 'POST',
             body: body
-        }, function () {
+        }, () => {
         });
     }
 }
 
 function transformRequest(req, res, nonceSubmitReqHandler) {
     let reqBody = '';
-    req.on('data', function (reqChunk) {
+    req.on('data', reqChunk => {
         if (req.isSubmitNonce === true) {
             reqBody += reqChunk;
             if (reqBody.length > 1024) {
@@ -68,10 +68,10 @@ function transformRequest(req, res, nonceSubmitReqHandler) {
         }
     });
 
-    req.on('end', function () {
+    req.on('end', () => {
         if (req.isSubmitNonce === true) {
             if (reqBody.length > 0) {
-                req.url = '/burst?' + reqBody;
+                req.url = `/burst?${reqBody}`;
                 nonceSubmitReqHandler(req);
             }
             reqBody = '';
@@ -84,14 +84,14 @@ function transformRequest(req, res, nonceSubmitReqHandler) {
 function transformResponse(req, res, nonceSubmitedHandler) {
     let recvBuffer = '';
     const _write = res.write;
-    res.write = function (data) {
+    res.write = data => {
         if (typeof data != 'undefined') {
             recvBuffer += data.toString();
         }
     };
 
     const _end = res.end;
-    res.end = function () {
+    res.end = () => {
         try {
             if (recvBuffer.length > 0) {
                 if (recvBuffer[0] != '{') {
@@ -122,7 +122,7 @@ function respondToGetMiningInfo(req, res) {
 
 function initHttpAPIServer(nonceSubmitReqHandler, nonceSubmitedHandler) {
 
-    const poolHttpServer = http.createServer(function (req, res) {
+    const poolHttpServer = http.createServer((req, res) => {
         transformRequest(req, res, nonceSubmitReqHandler);
         if (req.hasOwnProperty('isMiningInfo') && req.isMiningInfo) {
             respondToGetMiningInfo(req, res);
@@ -133,7 +133,7 @@ function initHttpAPIServer(nonceSubmitReqHandler, nonceSubmitedHandler) {
     });
 
     poolHttpServer.listen(poolConfig.poolPort, "0.0.0.0");
-    console.log("burst pool running on port " + poolConfig.poolPort);
+    console.log(`burst pool running on port ${poolConfig.poolPort}`);
 }
 
 function initWebsocketServer(newClientHandler) {
@@ -145,7 +145,7 @@ function initWebsocketServer(newClientHandler) {
     };
 
     ioSocket = io.listen(poolConfig.websocketPort, ioOption);
-    console.log("websocket running on port " + poolConfig.websocketPort);
+    console.log(`websocket running on port ${poolConfig.websocketPort}`);
     ioSocket.on('connection', newClientHandler);
 
     function sendHeartbeat() {
@@ -167,22 +167,22 @@ function initWebserver() {
         extended: true
     }));
 
-    app.get('/burst', function (req, res) {
+    app.get('/burst', (req, res) => {
         //setTimeout(function(){
         request.get({
-            url: 'http://127.0.0.1:' + poolConfig.poolPort + req.url,
+            url: `http://127.0.0.1:${poolConfig.poolPort}${req.url}`,
             method: 'GET'
         }).pipe(res);
         //}, Math.random()*500);
     });
 
-    app.post('/burst', function (req, res) {
+    app.post('/burst', (req, res) => {
         //setTimeout(function(){
         request({
-            url: 'http://127.0.0.1:' + poolConfig.poolPort + req.url,
+            url: `http://127.0.0.1:${poolConfig.poolPort}${req.url}`,
             method: 'POST',
             form: req.body
-        }, function (err, response, body) {
+        }, (err, response, body) => {
             if (typeof body != 'undefined' && body != null && body.length > 0) {
                 res.write(body);
             }
@@ -191,12 +191,12 @@ function initWebserver() {
         //}, Math.random()*500);
     });
 
-    app.use(function (req, res, next) {
+    app.use((req, res, next) => {
         res.send('404 Not Found');
     });
 
-    app.listen(poolConfig.httpPort, function () {
-        console.log('http server running on port ' + poolConfig.httpPort);
+    app.listen(poolConfig.httpPort, () => {
+        console.log(`http server running on port ${poolConfig.httpPort}`);
     });
 }
 
@@ -247,7 +247,7 @@ function clientUnicastLog(socket, str) {
 }
 
 module.exports = {
-    start: function (nonceSubmitReqHandler, nonceSubmitedHandler, newClientHandler) {
+    start: (nonceSubmitReqHandler, nonceSubmitedHandler, newClientHandler) => {
         try {
             http.globalAgent.maxSockets = 100;
             initWebserver();
@@ -259,16 +259,14 @@ module.exports = {
             console.trace();
         }
     },
-    getWebsocket: function () {
-        return ioSocket;
-    },
+    getWebsocket: () => ioSocket,
     clientLogJson: clientLogJson,
     clientUnicastLogJson: clientUnicastLogJson,
     clientLog: clientLog,
     clientLogFormatted: clientLogFormatted,
     clientUnicastLog: clientUnicastLog,
     consoleJson: consoleJson,
-    httpPostForm: function (req, formData, done) {
+    httpPostForm: (req, formData, done) => {
         try {
             const form = duplicate(formData);
             form.requestType = req;

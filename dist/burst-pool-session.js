@@ -26,7 +26,7 @@ function getWalletUrl() {
     if (sessionState.currentWalletNdx < config.wallets.length) {
         return config.wallets[sessionState.currentWalletNdx].walletUrl + '/burst';
     } else {
-        return config.wallets[0].walletUrl + '/burst';
+        return `${config.wallets[0].walletUrl}/burst`;
     }
 }
 
@@ -34,7 +34,7 @@ function getConstants(done) {
     request.post({
         url: getWalletUrl(),
         form: {requestType: 'getConstants'}
-    }, function (error, res, body) {
+    }, (error, res, body) => {
         const result = {
             status: false,
             msg: ''
@@ -44,7 +44,7 @@ function getConstants(done) {
                 const bodyJson = JSON.parse(body);
                 if (bodyJson.hasOwnProperty('genesisBlockId')) {
                     sessionState.genesisBlockId = bodyJson.genesisBlockId;
-                    console.log("genesis block id = " + sessionState.genesisBlockId);
+                    console.log(`genesis block id = ${sessionState.genesisBlockId}`);
                 }
                 result.status = true;
                 result.msg = bodyJson;
@@ -58,7 +58,7 @@ function getConstants(done) {
 
 function getGenesisBlock(done) {
     if (sessionState.genesisBlockId == 0) {
-        getConstants(function (res) {
+        getConstants(res => {
             if (res.status === true) {
                 getGenesisBlock(done);
             }
@@ -70,7 +70,7 @@ function getGenesisBlock(done) {
                 requestType: 'getBlock',
                 block: sessionState.genesisBlockId
             }
-        }, function (error, res, body) {
+        }, (error, res, body) => {
             const result = {
                 status: true,
                 msg: null
@@ -81,7 +81,7 @@ function getGenesisBlock(done) {
                     result.msg.blockId = sessionState.genesisBlockId;
                     if (result.msg.hasOwnProperty('baseTarget')) {
                         sessionState.genesisBaseTarget = result.msg.baseTarget;
-                        console.log("genesis base target = " + sessionState.genesisBaseTarget);
+                        console.log(`genesis base target = ${sessionState.genesisBaseTarget}`);
                     }
                 } catch (e) {
                 }
@@ -98,7 +98,7 @@ function getConstant(done) {
     request.post({
         url: getWalletUrl(),
         form: {requestType: 'getConstants'}
-    }, function (error, res, body) {
+    }, (error, res, body) => {
         if (!error && res.statusCode == 200) {
             sessionState.walletConstant = JSON.parse(body);
         }
@@ -110,15 +110,15 @@ function getBlockchainTime(done) {
     request.post({
         url: getWalletUrl(),
         form: {requestType: 'getTime'}
-    }, function (error2, res2, body2) {
+    }, (error2, res2, body2) => {
         if (!error2 && res2.statusCode == 200) {
-            const currentTime = new Date().getTime();
+            const currentTime = Date.now(); //new Date().getTime();
             const blockTimestamp = JSON.parse(body2);
             sessionState.genesisBlockTimestamp = currentTime - parseInt(blockTimestamp.time) * 1000;
 
-            console.log('current timestamp ' + currentTime);
-            console.log("genesis-block blocktime " + blockTimestamp.time);
-            console.log("genesis-block timestamp " + sessionState.genesisBlockTimestamp);
+            console.log(`current timestamp ${currentTime}`);
+            console.log(`genesis-block blocktime ${blockTimestamp.time}`);
+            console.log(`genesis-block timestamp ${sessionState.genesisBlockTimestamp}`);
         }
         done();
     });
@@ -129,7 +129,7 @@ function getMiningInfo(done) {
     request.post({
         url: getWalletUrl(),
         form: {requestType: 'getMiningInfo'}
-    }, function (error3, res3, body3) {
+    }, (error3, res3, body3) => {
         const result = {
             status: false,
             msg: ''
@@ -160,10 +160,10 @@ function switchNextWallet() {
     if (config.wallets.length > 1) {
         if (config.walletIndex + 1 < config.wallets.length) {
             sessionState.walletIndex = sessionState.walletIndex + 1;
-            console.log('switch wallet to ' + config.wallets[config.walletIndex].walletUrl + ' [' + config.walletIndex + ']');
+            console.log(`switch wallet to ${config.wallets[config.walletIndex].walletUrl} [${config.walletIndex}]`);
         } else {
             sessionState.walletIndex = 0;
-            console.log('switch wallet to ' + config.wallets[config.walletIndex].walletUrl + ' [' + config.walletIndex + ']');
+            console.log(`switch wallet to ${config.wallets[config.walletIndex].walletUrl} [${config.walletIndex}]`);
         }
     }
 }
@@ -175,7 +175,7 @@ function getBlockInfoFromHeight(blockId, done) {
             requestType: 'getBlock',
             height: blockId
         }
-    }, function (error3, res3, body3) {
+    }, (error3, res3, body3) => {
         const result = {
             status: false,
             data: {}
@@ -197,7 +197,7 @@ function getBlockInfo(blockId, done) {
             requestType: 'getBlock',
             block: blockId
         }
-    }, function (error3, res3, body3) {
+    }, (error3, res3, body3) => {
         const result = {
             status: false,
             data: {}
@@ -214,11 +214,11 @@ function getBlockInfo(blockId, done) {
 
 function getLastBlockId(done) {
     request.post({
-        url: config.wallets[sessionState.walletIndex].walletUrl + '/burst',
+        url: `${config.wallets[sessionState.walletIndex].walletUrl}/burst`,
         form: {
             requestType: 'getBlockchainStatus'
         }
-    }, function (error3, res3, body3) {
+    }, (error3, res3, body3) => {
         const result = {
             status: false,
             data: {}
@@ -232,9 +232,9 @@ function getLastBlockId(done) {
 }
 
 function updateCurrentBlockState(done) {
-    getLastBlockId(function (result) {
+    getLastBlockId(result => {
         if (result.status === true) {
-            getBlockInfo(result.data.lastBlock, function (result2) {
+            getBlockInfo(result.data.lastBlock, result2 => {
                 if (result2.status === true) {
                     sessionState.current.blockInfo = result2.data;
                     sessionState.current.netDiff = sessionState.genesisBaseTarget / sessionState.current.blockInfo.baseTarget;
@@ -252,31 +252,27 @@ module.exports = {
     getWalletUrl: getWalletUrl,
     getGenesisBaseTarget: getGenesisBaseTarget,
     getCurrentBaseTarget: getCurrentBaseTarget,
-    getCurrentBlockHeight: function () {
-        return sessionState.current.blockHeight;
-    },
-    getPoolDiff: function () {
+    getCurrentBlockHeight: () => sessionState.current.blockHeight,
+    getPoolDiff: () => {
         const B0 = parseFloat(getGenesisBaseTarget());
         const B = parseFloat(sessionState.current.baseTarget);
         const Pd = config.poolDiff;
         const netDiff = B0 / B;
         return netDiff / Pd;
     },
-    getNetDiff: function () {
+    getNetDiff: () => {
         const B0 = parseFloat(getGenesisBaseTarget());
         const B = parseFloat(sessionState.current.baseTarget);
         return B0 / B;
     },
-    getState: function () {
-        return sessionState;
-    },
+    getState: () => sessionState,
     getBlockInfo: getBlockInfo,
     getLastBlockId: getLastBlockId,
     getBlockInfoFromHeight: getBlockInfoFromHeight,
     isAccountIdAssignedToPool: isAccountIdAssignedToPool,
     switchNextWallet: switchNextWallet,
     getMiningInfo: getMiningInfo,
-    updateByNewBlock: function (height, baseTarget, done) {
+    updateByNewBlock: (height, baseTarget, done) => {
         sessionState.prevBlocks.unshift(JSON.parse(JSON.stringify(sessionState.current)));
         if (sessionState.prevBlocks.length > 30) {
             const toRemove = sessionState.prevBlocks.length - 30;
@@ -290,16 +286,12 @@ module.exports = {
 
         updateCurrentBlockState(done);
     },
-    getMiningInfoCache: function () {
-        return miningInfoCache;
-    },
-    getCurrentRoundStartTime: function () {
-        return sessionState.current.startTime;
-    },
-    setWalletNdx: function (ndx) {
+    getMiningInfoCache: () => miningInfoCache,
+    getCurrentRoundStartTime: () => sessionState.current.startTime,
+    setWalletNdx: ndx => {
         sessionState.walletIndex = ndx;
     },
-    getWalletNdx: function () {
+    getWalletNdx: () => {
         sessionState.walletIndex++;
         if (sessionState.walletIndex >= config.wallets.length) {
             sessionState.walletIndex = 0;
@@ -307,43 +299,43 @@ module.exports = {
         return sessionState.walletIndex;
     },
     init: function (done) {
-        this.loadSession(function () {
-            async.parallel([function (callback) {
-                getGenesisBlock(function (res) {
+        this.loadSession(() => {
+            async.parallel([callback => {
+                getGenesisBlock(res => {
                     callback();
                 });
-            }, function (callback) {
-                getConstant(function () {
+            }, callback => {
+                getConstant(() => {
                     callback();
                 });
-            }, function (callback) {
-                getBlockchainTime(function () {
+            }, callback => {
+                getBlockchainTime(() => {
                     callback();
                 });
-            }, function (callback) {
-                getMiningInfo(function (result) {
+            }, callback => {
+                getMiningInfo(result => {
                     const currentTime = new Date().getTime();
                     sessionState.current.blockHeight = result.msg.height;
                     sessionState.current.roundStartTime = currentTime;
                     sessionState.current.baseTarget = result.msg.baseTarget;
                     callback();
                 });
-            }, function (callback) {
-                updateCurrentBlockState(function (status) {
+            }, callback => {
+                updateCurrentBlockState(status => {
                     callback();
                 });
-            }], function (err, results) {
+            }], (err, results) => {
                 done();
             });
         });
     },
-    saveSession: function () {
+    saveSession: () => {
         const jsonData = JSON.stringify(sessionState, null, 2);
         fs.writeFileSync('pool-session.json', jsonData);
     },
-    loadSession: function (done) {
+    loadSession: done => {
         if (fs.existsSync('pool-session.json')) {
-            fs.readFile('pool-session.json', function (err, data) {
+            fs.readFile('pool-session.json', (err, data) => {
                 try {
                     const loadedData = JSON.parse(data);
                     sessionState = loadedData;

@@ -53,7 +53,7 @@ RoundShare.prototype.updateByNewDeadline = function (deadline) {
         this.substractShare(config.sharePenalty);
         assignedShare = 0;
     }
-    this.lastUpdate = new Date().getTime();
+    this.lastUpdate = Date.now(); //new Date().getTime();
     return assignedShare;
 };
 
@@ -127,7 +127,7 @@ AccountShare.prototype.getShareOnBlock = function (height) {
 AccountShare.prototype.deleteRoundShareByDistance = function (distance) {
     if (this.prevRoundShare.length > distance) {
         const blockExpired = this.currentRoundShare.height - distance;
-        poolProtocol.clientLog('Account ' + this.currentRoundShare.accountId + ' share below Block#' + blockExpired + ' is expired');
+        poolProtocol.clientLog(`Account ${this.currentRoundShare.accountId} share below Block#${blockExpired} is expired`);
         this.prevRoundShare.splice(distance, this.prevRoundShare.length - distance);
     }
 };
@@ -242,7 +242,7 @@ PoolShare.prototype.getCumulativeShares = function () {
     let cumulativeShare = {};
     for (let accountId in blockShareList) {
         const shareList = blockShareList[accountId];
-        shareList.forEach(function (share) {
+        shareList.forEach(share => {
             if (cumulativeShare.hasOwnProperty(accountId)) {
                 cumulativeShare[accountId].share += share.share;
                 cumulativeShare[accountId].roundCount++;
@@ -292,7 +292,7 @@ PoolShare.prototype.deleteAccountShareBelowThresshold = function (shareAmount, n
     for (let accountId in cumulativeShare) {
         if (cumulativeShare[accountId].share < shareAmount && cumulativeShare[accountId].roundCount > numOfRound) {
             this.deleteAccount(accountId);
-            console.log("deleted account " + accountId + " because of low share");
+            console.log(`deleted account ${accountId} because of low share`);
         }
     }
 };
@@ -326,49 +326,39 @@ PoolShare.prototype.substractShareFromAccount = function (accountId, share) {
 const poolShare = new PoolShare();
 
 module.exports = {
-    addShareToAccount: function (accountId, share) {
+    addShareToAccount: (accountId, share) => {
         poolShare.addShareToAccount(accountId, accountId);
     },
-    updateByNewBlock: function (height, baseTarget) {
+    updateByNewBlock: (height, baseTarget) => {
         poolShare.updateByNewBlock(height, baseTarget);
     },
-    updateByNewDeadline: function (accountId, deadline) {
+    updateByNewDeadline: (accountId, deadline) => {
         poolShare.updateByNewDeadline(accountId, deadline);
     },
-    getBlockShare: function (height) {
-        return poolShare.getBlockShare(height);
-    },
-    getShares: function () {
-        return poolShare.getShares();
-    },
-    getCumulativeShares: function () {
-        return poolShare.getCumulativeShares();
-    },
-    getAccountShare: function (accountId) {
-        return poolShare.getAccountShare(accountId);
-    },
-    saveSession: function () {
+    getBlockShare: height => poolShare.getBlockShare(height),
+    getShares: () => poolShare.getShares(),
+    getCumulativeShares: () => poolShare.getCumulativeShares(),
+    getAccountShare: accountId => poolShare.getAccountShare(accountId),
+    saveSession: () => {
         const poolShareData = JSON.stringify(poolShare, null, 2);
         fs.writeFileSync('pool-share.json', poolShareData);
     },
-    getCurrentRoundShares: function () {
-        return poolShare.getCurrentRoundShares();
-    },
-    deleteAccountShare: function (accountId) {
+    getCurrentRoundShares: () => poolShare.getCurrentRoundShares(),
+    deleteAccountShare: accountId => {
         poolShare.deleteAccountShare(accountId);
     },
-    deleteRoundShareByDistance: function (distance) {
+    deleteRoundShareByDistance: distance => {
         poolShare.deleteRoundShareByDistance(distance);
     },
-    deleteAccountShareBelowThresshold: function (shareAmount, numOfRound) {
+    deleteAccountShareBelowThresshold: (shareAmount, numOfRound) => {
         poolShare.deleteAccountShareBelowThresshold(shareAmount, numOfRound);
     },
-    deleteAccount: function (accountId) {
+    deleteAccount: accountId => {
         poolShare.deleteAccount(accountId);
     },
-    loadSession: function (done) {
+    loadSession: done => {
         if (fs.existsSync('pool-share.json')) {
-            fs.readFile('pool-share.json', function (err, data) {
+            fs.readFile('pool-share.json', (err, data) => {
                 try {
                     const loadedData = JSON.parse(data);
                     if (loadedData.hasOwnProperty('accountShare')) {

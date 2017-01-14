@@ -15,7 +15,7 @@ function onNewBlock(miningInfo) {
     poolProtocol.clientLogJson(miningInfo);
 
     try {
-        poolSession.updateByNewBlock(miningInfo.height, miningInfo.baseTarget, function () {
+        poolSession.updateByNewBlock(miningInfo.height, miningInfo.baseTarget, () => {
             poolShare.deleteRoundShareByDistance(config.maxRoundCount);
             poolShare.deleteAccountShareBelowThresshold(1.0, config.maxRoundCount);
             poolShare.saveSession();
@@ -54,7 +54,7 @@ function getDateTime() {
 function logMiningRound(socket) {
     const blockHeight = poolSession.getCurrentBlockHeight();
     const roundStart = poolSession.getCurrentRoundStartTime();
-    const currentTime = new Date().getTime();
+    const currentTime = Date.now(); //new Date().getTime();
     const elapsed = currentTime - roundStart;
     const duration = moment.duration(elapsed).humanize(true);
     const roundShare = poolShare.getCurrentRoundShares();
@@ -139,7 +139,7 @@ function onNonceSubmitedRes(req, res) {
 
             const deadline = parseInt(res.deadline);
             const accountId = req.minerData.accountId;
-            process.nextTick(function () {
+            process.nextTick(() => {
                 req.minerData.deadline = deadline;
                 req.minerData.submission = res.result;
 
@@ -152,7 +152,7 @@ function onNonceSubmitedRes(req, res) {
 
                 const sessionState = poolSession.getState();
 
-                const currentTime = new Date().getTime();
+                const currentTime = Date.now(); //new Date().getTime();
                 const miningInfo = {
                     height: sessionState.current.blockHeight,
                     currentTime: currentTime,
@@ -211,11 +211,11 @@ function onNewClientConnected(socket) {
     const clientIp = socket.request.connection.remoteAddress;
     let clientPort = socket.request.connection.remotePort;
 
-    socket.on('chat', function (msg) {
+    socket.on('chat', msg => {
         onWebsocketClientChat(clientIp, msg);
     });
 
-    socket.on('disconnect', function () {
+    socket.on('disconnect', () => {
         //console.log('viewer disconnected from '+clientIp+":"+clientPort);
     });
 
@@ -246,20 +246,20 @@ function saveSession() {
 
 function initPool(walletNdx) {
     poolSession.setWalletNdx(walletNdx);
-    poolSession.init(function () {
-        async.parallel([function (callback) {
-            poolPayment.loadSession(function () {
+    poolSession.init(() => {
+        async.parallel([callback => {
+            poolPayment.loadSession(() => {
                 callback();
             });
-        }, function (callback) {
-            poolShare.loadSession(function () {
+        }, (callback) => {
+            poolShare.loadSession(() => {
                 callback();
             });
-        }], function (err, results) {
+        }], (err, results) => {
             poolProtocol.start(onNonceSubmitReq, onNonceSubmitedRes, onNewClientConnected);
             setInterval(saveSession, 60000);
-            setInterval(function () {
-                poolSession.getMiningInfo(function (result) {
+            setInterval(() => {
+                poolSession.getMiningInfo(result => {
                     if (result.status === true) {
                         onMiningInfoUpdate(result.msg);
                     }
@@ -275,9 +275,15 @@ process.stdin.resume();
 
 function exitHandler(options, err) {
     poolShare.saveSession();
-    if (options.cleanup) console.log('clean');
-    if (err) console.log(err.stack);
-    if (options.exit) process.exit();
+    if (options.cleanup) {
+        console.log('clean');
+    }
+    if (err) {
+        console.log(err.stack);
+    }
+    if (options.exit) {
+        process.exit();
+    }
 }
 
 process.on('exit', exitHandler.bind(null, {cleanup: true}));

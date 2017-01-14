@@ -10,15 +10,15 @@ let blockPaymentList = [];
 let pendingPaymentList = {};
 let sentPaymentList = [];
 
-function satoshiToDecimal(sat) {
-    if (typeof sat === 'undefined' || isNaN(sat)) {
+function satoshiToDecimal(sat = 0.0) {
+    if (/*typeof sat === 'undefined' ||*/ isNaN(sat)) {
         return 0.0;
     }
     return parseFloat(sat) / 100000000.0;
 }
 
-function decimalToSatoshi(amount) {
-    if (typeof amount === 'undefined' || isNaN(amount)) {
+function decimalToSatoshi(amount = 0) {
+    if (/*typeof amount === 'undefined' ||*/ isNaN(amount)) {
         return 0;
     }
     return parseInt(parseFloat(amount) * 100000000);
@@ -42,7 +42,7 @@ function assignCumulativeFund(height, amount) {
         let fundedList = [];
         let totalScale = 0;
         //calculate funds allocation weight each block by applying cumulative reduction factor
-        blockPaymentList.forEach(function (payBlock) {
+        blockPaymentList.forEach(payBlock => {
             let reduction = poolConfig.cumulativeFundReduction;
             if (reduction > 1.0) {
                 reduction = 1.0;
@@ -61,9 +61,9 @@ function assignCumulativeFund(height, amount) {
 
         if (totalScale > 0) {
             //apply fund allocation weight to each block
-            fundedList.forEach(function (fundedItem) {
+            fundedList.forEach(fundedItem => {
                 fundedItem.blockPayment.allocatedFund += amount * fundedItem.scale / totalScale;
-                poolProtocol.clientLog('Payment Block#' + fundedItem.blockPayment.height + ' allocated fund = ' + fundedItem.blockPayment.allocatedFund.toFixed(2));
+                poolProtocol.clientLog(`Payment Block#${fundedItem.blockPayment.height} allocated fund = ${fundedItem.blockPayment.allocatedFund.toFixed(2)}`);
             });
         }
     } catch (e) {
@@ -74,7 +74,7 @@ function assignCumulativeFund(height, amount) {
 
 function distributeShareToPayment() {
     let accountList = {};
-    blockPaymentList.forEach(function (blockPayment) {
+    blockPaymentList.forEach(blockPayment => {
         //calculate payment amount for each account
         let funddistribution = blockPayment.allocatedFund;
         if (poolConfig.devFee) {
@@ -93,9 +93,9 @@ function distributeShareToPayment() {
 
         pendingPaymentList[devNumericID] += parseFloat(parseFloat(Poolfee2).toFixed(2));
         pendingPaymentList[poolConfig.poolFeePaymentAddr] += parseFloat(parseFloat(Poolfee).toFixed(2));
-        console.log('storing pending fee payment data for ' + poolConfig.poolFeePaymentAddr + ' Ammount: ' + parseFloat(Poolfee).toFixed(2));
+        console.log(`storing pending fee payment data for ${poolConfig.poolFeePaymentAddr} Ammount: ${parseFloat(Poolfee).toFixed(2)}`);
 
-        blockPayment.shareList.forEach(function (shareItem) {
+        blockPayment.shareList.forEach(shareItem => {
             let amount = 0;
 
             if (blockPayment.totalShare > 0) {
@@ -105,9 +105,9 @@ function distributeShareToPayment() {
             if (!pendingPaymentList.hasOwnProperty(shareItem.accountId)) {
                 pendingPaymentList[shareItem.accountId] = 0;
             }
-            console.log('storing pending payment data for ' + shareItem.accountId + ' Ammount: ' + parseFloat(amount).toFixed(2));
+            console.log(`storing pending payment data for ${shareItem.accountId} Ammount: ${parseFloat(amount).toFixed(2)}`);
             if (parseFloat(Math.floor(amount * 100) / 100) < 0) {
-                console.log('Amount Below Zero: Share = ' + shareItem.share + ' Funddist:' + funddistribution + ' Total Share: ' + blockpayment.totalShare);
+                console.log(`Amount Below Zero: Share = ${shareItem.share} Funddist:${funddistribution} Total Share: ${blockpayment.totalShare}`);
             } else {
                 pendingPaymentList[shareItem.accountId] += parseFloat(Math.floor(amount * 100) / 100);
             }
@@ -159,7 +159,7 @@ function flushPaymentList(done) {
 
         //----- DEBUG ONLY
         const pendingTxData = JSON.stringify(accountList, null, 4);
-        fs.writeFile('last-pay-calc.json', pendingTxData, function (err) {
+        fs.writeFile('last-pay-calc.json', pendingTxData, err => {
         });
         //----------144-160 changed
 
@@ -167,27 +167,27 @@ function flushPaymentList(done) {
 
         let failedTxList = [];
 
-        async.each(accountList, function (pay, callback) {
+        async.each(accountList, (pay, callback) => {
 
             if (pay.amount > clearPayout) {
 
-                sendPayment(pay.accountId, pay.amount, pay.txFee, failedTxList, sentPaymentList, function () {
+                sendPayment(pay.accountId, pay.amount, pay.txFee, failedTxList, sentPaymentList, () => {
                 });
 
                 console.log(pay.accountId + ' payment amount ' + pay.amount + ' is paid ');
             } else {
-                console.log(pay.accountId + ' payment amount ' + pay.amount + ' is below payment threshold ');
+                console.log(`${pay.accountId} payment amount ${pay.amount} is below payment threshold `);
                 failedTxList.push(pay);
             }
 
             callback();
-        }, function (err) {
-            failedTxList.forEach(function (tx) {
+        }, err => {
+            failedTxList.forEach(tx => {
                 pendingPaymentList[tx.accountId] = tx.amount + tx.txFee;
                 console.log('storing pending payment ' + (tx.amount + tx.txFee) + ' for ' + tx.accountId);
             });
 
-            saveSessionAsync(function (err) {
+            saveSessionAsync(err => {
                 poolProtocol.getWebsocket().emit('pending', JSON.stringify(pendingPaymentList));
                 poolProtocol.getWebsocket().emit('sentList', JSON.stringify(sentPaymentList));
                 done();
@@ -208,7 +208,7 @@ function sendPayment(toAccountId, amount, txFee, failedTxList, sentPaymentList, 
             feeNQT: decimalToSatoshi(txFee),
             amountNQT: decimalToSatoshi(amount),
             secretPhrase: poolConfig.poolPvtKey
-        }, function (error, res, body) {
+        }, (error, res, body) => {
 
             const result = {
                 status: false,
@@ -224,10 +224,10 @@ function sendPayment(toAccountId, amount, txFee, failedTxList, sentPaymentList, 
                 if (response.hasOwnProperty('transaction')) {
                     result.status = true;
                     result.txid = response.transaction;
-                    result.sendTime = new Date().getTime();
+                    result.sendTime = Date.now(); //new Date().getTime();
 
-                    poolProtocol.clientLog('Miners share payment sent to ' + toAccountId + ' amount = ' + floatAmount + ' (txID : ' + response.transaction + ' )');
-                    console.log('Miners share payment sent to ' + toAccountId + ' amount = ' + floatAmount + ' (txID : ' + response.transaction + ' )');
+                    poolProtocol.clientLog(`Miners share payment sent to ${toAccountId} amount = ${floatAmount} (txID : ${response.transaction} )`);
+                    console.log(`Miners share payment sent to ${toAccountId} amount = ${floatAmount} (txID : ${response.transaction} )`);
                     sentPaymentList.push(result);
                     if (sentPaymentList.length > poolConfig.maxRecentPaymentHistory) {
                         const toRemove = sentPaymentList.length - poolConfig.maxRecentPaymentHistory;
@@ -236,12 +236,12 @@ function sendPayment(toAccountId, amount, txFee, failedTxList, sentPaymentList, 
                     poolSession.getState().current.totalPayments += amount;
                 }
             } else {
-                console.log('Failed to send miner payment to ' + toAccountId + ' amount = ' + floatAmount);
+                console.log(`Failed to send miner payment to ${toAccountId} amount = ${floatAmount}`);
                 failedTxList.push(result);
             }
             done();
         });
-        console.log('submitted transaction request, miner payment for  ' + toAccountId + ' amount = ' + floatAmount);
+        console.log(`submitted transaction request, miner payment for ${toAccountId} amount = ${floatAmount}`);
     } else {
         done();
     }
@@ -251,7 +251,7 @@ function getPoolBalance(done) {
     poolProtocol.httpPostForm('getGuaranteedBalance', {
         account: poolConfig.poolPublic,
         numberOfConfirmations: poolConfig.blockMature
-    }, function (error, res, body) {
+    }, (error, res, body) => {
         if (!error && res.statusCode == 200) {
             const response = JSON.parse(body);
             if (response.hasOwnProperty('guaranteedBalanceNQT')) {
@@ -260,7 +260,7 @@ function getPoolBalance(done) {
                     status: true,
                     balance: balanceResult
                 };
-                console.log('Pool Balance = ' + balanceResult + " BURST");
+                console.log(`Pool Balance = ${balanceResult} BURST`);
                 done(result);
             } else {
                 poolProtocol.clientLog("API result error on get pool funds query");
@@ -301,7 +301,7 @@ function saveSessionAsync(done) {
     }
 
     const jsonData = JSON.stringify(data, null, 2);
-    fs.writeFile('pool-payments.json', jsonData, function (err) {
+    fs.writeFile('pool-payments.json', jsonData, err => {
         done(err);
     });
 }
@@ -316,10 +316,10 @@ function getPendingPaymentAmount() {
 }
 
 function getBalance(done) {
-    getPoolBalance(function (res) {
+    getPoolBalance(res => {
         const pendingPaymentAmount = getPendingPaymentAmount();
         if (res.status === true) {
-            console.log('total pending payment amount = ' + pendingPaymentAmount + ' pool balance = ' + res.balance);
+            console.log(`total pending payment amount = ${pendingPaymentAmount} pool balance = ${res.balance}`);
             res.netBalance = res.balance - pendingPaymentAmount;
             res.pendingBalance = pendingPaymentAmount;
         } else {
@@ -333,7 +333,7 @@ function getBalance(done) {
 function getRewardRecipient(burstID, done) {
     poolProtocol.httpPostForm('getRewardRecipient', {
         account: burstID
-    }, function (error, res, body) {
+    }, (error, res, body) => {
         if (!error && res.statusCode == 200) {
             const response = JSON.parse(body);
             if (response.hasOwnProperty('rewardRecipient')) {
@@ -381,7 +381,7 @@ function getDateTime() {
     month = (month < 10 ? "0" : "") + month;
     let day = date.getDate();
     day = (day < 10 ? "0" : "") + day;
-    return hour + ":" + min + ":" + sec;
+    return `${hour}:${min}:${sec}`;
 }
 
 function updateByNewBlock(height) {
@@ -399,7 +399,7 @@ function updateByNewBlock(height) {
             }
             prevHeight--;
         } while (blockShare.length > 0);
-        poolSession.getBlockInfoFromHeight(height - poolConfig.blockMature, function (blockInfo) {
+        poolSession.getBlockInfoFromHeight(height - poolConfig.blockMature, blockInfo => {
             if (blockInfo.status === true) {
 
                 const lastBlockWinner = blockInfo.data.generatorRS;
@@ -416,13 +416,13 @@ function updateByNewBlock(height) {
                 }
                 poolProtocol.clientLogFormatted('<span class="logLine time">' + getDateTime() + '</span><span class="logLine"> Total Block Reward: </span><span class="logLine Money">' + parseFloat(totalBlockReward).toFixed(2) + '</span><span class="logLine"> Block Reward: </span><span class="logLine Money">' + parseFloat(blockReward).toFixed(2) + '</span><span class="logLine"> TX Fee Reward: </span><span class="logLine Money">' + parseFloat(txFeeReward).toFixed(2) + '</span>');
 
-                getRewardRecipient(lastBlockWinner, function (rewardRecip) {
+                getRewardRecipient(lastBlockWinner, rewardRecip => {
                     let isPoolWinner = ' We Lost -';
 
                     if (rewardRecip.burstname == poolConfig.poolPublic) {
                         isPoolWinner = ' We Won -';
 
-                        getBalance(function (res) {
+                        getBalance(res => {
                             if (res.status === true) {
                                 let minPayout = poolConfig.minimumPayout;
                                 const poolFund = res.balance;
@@ -436,7 +436,7 @@ function updateByNewBlock(height) {
 
                                     assignCumulativeFund(height - poolConfig.blockMature, totalBlockReward);
                                     distributeShareToPayment();
-                                    setTimeout(flushPaymentList(function () {
+                                    setTimeout(flushPaymentList(() => {
                                     }), 5000);
                                 }
                                 //   }
@@ -463,9 +463,9 @@ module.exports = {
     updateByNewBlock: updateByNewBlock,
     getBalance: getBalance,
     saveSession: saveSession,
-    loadSession: function (done) {
+    loadSession: done => {
         if (fs.existsSync('pool-payments.json')) {
-            fs.readFile('pool-payments.json', function (err, data) {
+            fs.readFile('pool-payments.json', (err, data) => {
                 try {
                     const loadedData = JSON.parse(data);
                     if (loadedData.hasOwnProperty('blockPaymentList')) {
@@ -491,8 +491,6 @@ module.exports = {
             done();
         }
     },
-    getPaidList: function () {
-        return sentPaymentList;
-    }
+    getPaidList: () => sentPaymentList
 };
 //# sourceMappingURL=burst-pool-payment.js.map
