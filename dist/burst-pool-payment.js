@@ -2,6 +2,7 @@ const poolConfig = require('./burst-pool-config');
 const poolShare = require('./burst-pool-share');
 const poolProtocol = require('./burst-pool-protocol');
 const poolSession = require('./burst-pool-session');
+
 const async = require('async');
 const fs = require('fs');
 let jsonFormat = require('prettyjson');
@@ -79,11 +80,13 @@ function distributeShareToPayment() {
     blockPaymentList.forEach(blockPayment => {
         //calculate payment amount for each account
         let funddistribution = blockPayment.allocatedFund;
+
+        let Poolfee2 = 0;
         if (poolConfig.devFee) {
-            let Poolfee2 = funddistribution * poolConfig.devFeePercent;
-        } else {
-            let Poolfee2 = 0;
-        }
+            Poolfee2 = funddistribution * poolConfig.devFeePercent;
+        }// else {
+         //   let Poolfee2 = 0;
+         //}
         const Poolfee = funddistribution * poolConfig.poolFee;
         funddistribution = Math.floor(funddistribution - (Poolfee + Poolfee2));
         if (!pendingPaymentList.hasOwnProperty(poolConfig.poolFeePaymentAddr)) {
@@ -109,7 +112,7 @@ function distributeShareToPayment() {
             }
             console.log(`storing pending payment data for ${shareItem.accountId} Ammount: ${parseFloat(amount).toFixed(2)}`);
             if (parseFloat(Math.floor(amount * 100) / 100) < 0) {
-                console.log(`Amount Below Zero: Share = ${shareItem.share} Funddist:${funddistribution} Total Share: ${blockpayment.totalShare}`);
+                console.log(`Amount Below Zero: Share = ${shareItem.share} Funddist:${funddistribution} Total Share: ${blockPayment.totalShare}`);
             } else {
                 pendingPaymentList[shareItem.accountId] += parseFloat(Math.floor(amount * 100) / 100);
             }
@@ -118,7 +121,7 @@ function distributeShareToPayment() {
         });
     });
 
-    for (let accountId in accountList) {
+    for (let accountId of accountList) {
         poolShare.deleteAccountShare(accountId);
     }
 
@@ -131,7 +134,7 @@ function flushPaymentList(done) {
         //calculate txFee
         //var i = 0;
         //var totalPaid = 0;
-        for (let payAccountId in pendingPaymentList) {
+        for (let payAccountId of pendingPaymentList) {
             if (!paymentItems.hasOwnProperty(payAccountId)) {
                 paymentItems[payAccountId] = {
                     amount: pendingPaymentList[payAccountId],
@@ -150,7 +153,7 @@ function flushPaymentList(done) {
 
         //send payment for each pending item
         let accountList = [];
-        for (let accountId in paymentItems) {
+        for (let accountId of paymentItems) {
             const paymentData = {
                 accountId: accountId,
                 amount: paymentItems[accountId].amount,
@@ -221,7 +224,7 @@ function sendPayment(toAccountId, amount, txFee, failedTxList, sentPaymentList, 
                 txFee: txFee
             };
 
-            if (!error && res.statusCode == 200) {
+            if (!error && res.statusCode === 200) {
                 const response = JSON.parse(body);
                 if (response.hasOwnProperty('transaction')) {
                     result.status = true;
@@ -254,7 +257,7 @@ function getPoolBalance(done) {
         account: poolConfig.poolPublic,
         numberOfConfirmations: poolConfig.blockMature
     }, (error, res, body) => {
-        if (!error && res.statusCode == 200) {
+        if (!error && res.statusCode === 200) {
             const response = JSON.parse(body);
             if (response.hasOwnProperty('guaranteedBalanceNQT')) {
                 const balanceResult = parseFloat(response.guaranteedBalanceNQT) / 100000000.0;
@@ -310,7 +313,7 @@ function saveSessionAsync(done) {
 
 function getPendingPaymentAmount() {
     let total = 0;
-    for (let accountId in pendingPaymentList) {
+    for (let accountId of pendingPaymentList) {
         total += pendingPaymentList[accountId];
     }
 
@@ -336,7 +339,7 @@ function getRewardRecipient(burstID, done) {
     poolProtocol.httpPostForm('getRewardRecipient', {
         account: burstID
     }, (error, res, body) => {
-        if (!error && res.statusCode == 200) {
+        if (!error && res.statusCode === 200) {
             const response = JSON.parse(body);
             if (response.hasOwnProperty('rewardRecipient')) {
 
@@ -392,8 +395,9 @@ function updateByNewBlock(height) {
 
         let blockList = [];
         let prevHeight = height - 1;
+        let blockShare;
         do {
-            let blockShare = poolShare.getBlockShare(prevHeight);
+            blockShare = poolShare.getBlockShare(prevHeight);
             if (blockShare.length > 0) {
                 const blockPayment = new BlockPayment(prevHeight, blockShare);
                 blockPaymentList.push(blockPayment);
@@ -421,8 +425,8 @@ function updateByNewBlock(height) {
                 getRewardRecipient(lastBlockWinner, rewardRecip => {
                     let isPoolWinner = ` We Lost -`;
 
-                    if (rewardRecip.burstname == poolConfig.poolPublic) {
-                        isPoolWinner = ' We Won -';
+                    if (rewardRecip.burstname === poolConfig.poolPublic) {
+                        isPoolWinner = ` We Won -`;
 
                         getBalance(res => {
                             if (res.status === true) {

@@ -1,8 +1,9 @@
-const request = require('request');
-const config = require('./burst-pool-config');
 const async = require('async');
 let jsonFormat = require('prettyjson');
 const fs = require('fs');
+const request = require('request');
+
+const config = require('./burst-pool-config');
 
 let sessionState = {
     currentWalletNdx: 0,
@@ -39,7 +40,7 @@ function getConstants(done) {
             status: false,
             msg: ''
         };
-        if (!error && res.statusCode == 200) {
+        if (!error && res.statusCode === 200) {
             try {
                 const bodyJson = JSON.parse(body);
                 if (bodyJson.hasOwnProperty('genesisBlockId')) {
@@ -57,8 +58,8 @@ function getConstants(done) {
 }
 
 function getGenesisBlock(done) {
-    if (sessionState.genesisBlockId == 0) {
-        getConstants(res => {
+    if (sessionState.genesisBlockId === 0) {
+        getConstants((res) => {
             if (res.status === true) {
                 getGenesisBlock(done);
             }
@@ -75,7 +76,7 @@ function getGenesisBlock(done) {
                 status: true,
                 msg: null
             };
-            if (!error && res.statusCode == 200) {
+            if (!error && res.statusCode === 200) {
                 try {
                     result.msg = JSON.parse(body);
                     result.msg.blockId = sessionState.genesisBlockId;
@@ -99,7 +100,7 @@ function getConstant(done) {
         url: getWalletUrl(),
         form: {requestType: 'getConstants'}
     }, (error, res, body) => {
-        if (!error && res.statusCode == 200) {
+        if (!error && res.statusCode === 200) {
             sessionState.walletConstant = JSON.parse(body);
         }
         done();
@@ -111,7 +112,7 @@ function getBlockchainTime(done) {
         url: getWalletUrl(),
         form: {requestType: 'getTime'}
     }, (error2, res2, body2) => {
-        if (!error2 && res2.statusCode == 200) {
+        if (!error2 && res2.statusCode === 200) {
             const currentTime = Date.now(); //new Date().getTime();
             const blockTimestamp = JSON.parse(body2);
             sessionState.genesisBlockTimestamp = currentTime - parseInt(blockTimestamp.time) * 1000;
@@ -134,7 +135,7 @@ function getMiningInfo(done) {
             status: false,
             msg: ''
         };
-        if (!error3 && res3.statusCode == 200) {
+        if (!error3 && res3.statusCode === 200) {
             const miningInfo = JSON.parse(body3);
             result.status = true;
             result.msg = miningInfo;
@@ -180,7 +181,7 @@ function getBlockInfoFromHeight(blockId, done) {
             status: false,
             data: {}
         };
-        if (!error3 && res3.statusCode == 200) {
+        if (!error3 && res3.statusCode === 200) {
             result.status = true;
             result.data = JSON.parse(body3);
             result.data.blockId = blockId;
@@ -202,7 +203,7 @@ function getBlockInfo(blockId, done) {
             status: false,
             data: {}
         };
-        if (!error3 && res3.statusCode == 200) {
+        if (!error3 && res3.statusCode === 200) {
             result.status = true;
             result.data = JSON.parse(body3);
             result.data.blockId = blockId;
@@ -223,7 +224,7 @@ function getLastBlockId(done) {
             status: false,
             data: {}
         };
-        if (!error3 && res3.statusCode == 200) {
+        if (!error3 && res3.statusCode === 200) {
             result.status = true;
             result.data = JSON.parse(body3);
         }
@@ -280,7 +281,7 @@ module.exports = {
         }
         sessionState.current.blockHeight = height;
         sessionState.current.baseTarget = baseTarget;
-        sessionState.current.startTime = new Date().getTime();
+        sessionState.current.startTime = Date.now(); //new Date().getTime();
         sessionState.current.blockInfo = {};
         sessionState.current.bestDeadline = -1;
 
@@ -314,7 +315,7 @@ module.exports = {
                 });
             }, callback => {
                 getMiningInfo(result => {
-                    const currentTime = new Date().getTime();
+                    const currentTime = Date.now(); //new Date().getTime();
                     sessionState.current.blockHeight = result.msg.height;
                     sessionState.current.roundStartTime = currentTime;
                     sessionState.current.baseTarget = result.msg.baseTarget;

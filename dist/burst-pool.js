@@ -3,12 +3,13 @@
 let fs = require('fs');
 const url = require('url');
 const moment = require('moment');
+const async = require('async');
+
 const config = require('./burst-pool-config');
 const poolSession = require('./burst-pool-session');
 const poolShare = require('./burst-pool-share');
 const poolPayment = require('./burst-pool-payment');
 const poolProtocol = require('./burst-pool-protocol');
-const async = require('async');
 
 function onNewBlock(miningInfo) {
     poolProtocol.clientLog("new block :");
@@ -91,8 +92,8 @@ function onNonceSubmitReq(req) {
         minerReq = null;
     }
 
-    if (minerReq != null && minerReq.hasOwnProperty('query') && minerReq.query.hasOwnProperty('requestType')) {
-        if (minerReq.query.requestType.toLowerCase() == 'submitnonce') {
+    if (minerReq !== null && minerReq.hasOwnProperty('query') && minerReq.query.hasOwnProperty('requestType')) {
+        if (minerReq.query.requestType.toLowerCase() === 'submitnonce') {
             const remoteAddr = `${req.connection.remoteAddress}:${req.connection.remotePort}`;
             const minerData = {
                 nonce: 0,
@@ -127,7 +128,7 @@ function onNonceSubmitReq(req) {
             req.isSubmitNonce = true;
             req.headers['content-length'] = "0";
             req.minerData = minerData;
-        } else if (minerReq.query.requestType.toLowerCase() == 'getmininginfo') {
+        } else if (minerReq.query.requestType.toLowerCase() === 'getmininginfo') {
             req.isMiningInfo = true;
         }
     }
@@ -146,7 +147,7 @@ function onNonceSubmitedRes(req, res) {
                 poolShare.updateByNewDeadline(accountId, deadline);
 
                 const accountShare = poolShare.getAccountShare(accountId);
-                if (accountShare != null) {
+                if (accountShare !== null) {
                     poolProtocol.getWebsocket().emit('roundShares', JSON.stringify(accountShare));
                 }
 
@@ -178,7 +179,7 @@ function onNonceSubmitedRes(req, res) {
                     //   poolProtocol.clientLog("new best deadline : #"+poolSession.getCurrentBlockHeight());
                     poolProtocol.clientLogFormatted(`<span class="logLine time">${getDateTime()}</span>${minerPic}<span class="logLine"> Best deadline = </span><span class="logLine deadline">${moment.duration(req.minerData.deadline * 1000).humanize(false)}</span><span class="logLine"> by Burst ID: </span><span class="logLine accountName"><a href="https://block.burstcoin.info/acc.php?acc=${req.minerData.accountId}" target=_blank>${req.minerData.accountId}</a></span>`);
                 }
-                if (sessionState.current.bestDeadline == -1) {
+                if (sessionState.current.bestDeadline === -1) {
                     sessionState.current.bestDeadline = deadline;
                     console.log('new best deadline ' + sessionState.current.bestDeadline);
                     poolProtocol.getWebsocket().emit('miningInfo', JSON.stringify(miningInfo));

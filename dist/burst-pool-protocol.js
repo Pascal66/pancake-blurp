@@ -1,5 +1,6 @@
 const poolSession = require('./burst-pool-session');
 const poolConfig = require('./burst-pool-config');
+
 const jsonMarkup = require('json-markup');
 const jsonFormat = require('prettyjson');
 let url = require('url');
@@ -85,7 +86,7 @@ function transformResponse(req, res, nonceSubmitedHandler) {
     let recvBuffer = '';
     const _write = res.write;
     res.write = data => {
-        if (typeof data != 'undefined') {
+        if (typeof data !== 'undefined') {
             recvBuffer += data.toString();
         }
     };
@@ -94,7 +95,7 @@ function transformResponse(req, res, nonceSubmitedHandler) {
     res.end = () => {
         try {
             if (recvBuffer.length > 0) {
-                if (recvBuffer[0] != '{') {
+                if (recvBuffer[0] !== '{') {
                     //console.log(recvBuffer);
                 } else {
                     const response = JSON.parse(recvBuffer);
@@ -162,7 +163,7 @@ function initWebserver() {
     app.use(compression({
         threshold: 64
     }));
-    app.use(express.static(path.join(__dirname, 'client')));
+    app.use(express.static(path.join(__dirname, '../client')));
     app.use(bodyParser.urlencoded({
         extended: true
     }));
@@ -183,7 +184,7 @@ function initWebserver() {
             method: 'POST',
             form: req.body
         }, (err, response, body) => {
-            if (typeof body != 'undefined' && body != null && body.length > 0) {
+            if (typeof body !== 'undefined' && body !== null && body.length > 0) {
                 res.write(body);
             }
             res.end();

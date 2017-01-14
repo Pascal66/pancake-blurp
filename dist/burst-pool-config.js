@@ -23,7 +23,7 @@ module.exports = {
     poolFeePaymentAddr: '14176614198960711717',
     defaultPaymentDeadline: 1440,
     poolFeePaymentTxFeeNQT: 100000000,
-    httpPort: 80,
+    httpPort: 82,
     websocketPort: 4443,
     enablePayment: true,
     minimumPayout: 250.0,

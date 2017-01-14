@@ -2,8 +2,8 @@ const fs = require('fs');
 
 const enabled = true;
 const toConsole = true;
-const toFile = false;
-const toGeneralFile = false;
+const toFile = true;
+const toGeneralFile = true;
 const generalLogFilename = 'log_general.txt';
 
 /**
