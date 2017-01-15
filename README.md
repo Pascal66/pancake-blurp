@@ -1,7 +1,7 @@
-burst-pool
-==========
+burst-pool v2
+=============
 
-pool-config.js
+Changes are to made there -> pool-config.js
 
 "blockMature" amount of blocks the pool goes back and checks for block winner
 
@@ -39,4 +39,8 @@ redirection : {
   
 so change the 8.8.8.8 on the old server config to the new servers ip and enabled to true then it should forward all the requests.
 
-tip - make sure you also change a few characters in the old servers passphase so the pool doesnt accidentally pay out twice
+tip - make sure you also change a few characters in the old servers passphase so the pool doesnt accidentally pay out twice.
+
+Orginal Credit :
+V2 Pool for Burstcoin - https://github.com/uraymeiviar/burst-pool
+[Burst] BURST-8E8K-WQ2F-ZDZ5-FQWHX [Bitcoin] 1UrayjqRjSJjuouhJnkczy5AuMqJGRK4b
