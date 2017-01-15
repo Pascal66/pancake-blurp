@@ -4,3 +4,6 @@ pool-payments.json
 pool-session.json
 pool-share.json
 *.exe
+src/
+build/
+gulpfiles.js
