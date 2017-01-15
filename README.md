@@ -1,21 +1,7 @@
 burst-pool
 ==========
 
-Lex Pool for Burstcoin
-Official Pool URL: http://burst.lexitoshi.uk/#
-Recipient: BURST-F3XD-Y4M5-SN8C-G9FFJ
-
-please donate for development to
-
-[Burst] BURST-GAJL-VWKN-2XPB-H39R9
-[Bitcoin] 1EWqGpP96Jx2gnD4UQBEoMrdpJPmLpdKJH
-
-config
-
-
-"devFee" that if enabled would send [devFeePercent] of the pools earnings as a developer fee to myself after a few requests of people wanting to support the project. 1% works out to be less than 25 coins. getting lower each month.
-
-"devFeePercent" pool owners can choose the percent they wish to donateto development
+pool-config.js
 
 "blockMature" amount of blocks the pool goes back and checks for block winner
 
@@ -41,10 +27,7 @@ config
 
 "maxRecentPaymentHistory" max lines to show in payment history
 
- 
- 
- in the pool config.js a useful feature if you ever have to swap hosts is
- 
+In the pool config.js a useful feature if you ever have to swap hosts is
 
 redirection : {
 
