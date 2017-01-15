@@ -6,4 +6,6 @@ pool-share.json
 *.exe
 src/
 build/
+dist/*.map
 gulpfiles.js
+npm-debug.log
