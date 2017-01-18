@@ -7,7 +7,6 @@ pool-share.json
 src/
 build/
 dist/
-dist/*.map
 gulpfile.js
 npm-debug.log
 gjslint.conf
