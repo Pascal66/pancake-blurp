@@ -3,7 +3,7 @@ he's basically gone removed all the credits and deleted a feature asked by the u
 there is no difference besides from the node version it runs.
 his node v6 & v7 fork breaks backwards compatibility with mine at the cost of no additional features.''
 
-- We never ask this guy to support our improved code, because first he didnt know how to code, and second, we are able to support what we produce.
+- We never ask this guy to support our improved code, we are able to support what we produce.
 - The old code has at least two majors bugs (and 10 minors), that make unusable the pool in middle/long term (never corrected, and make loose money for the owner of this pool), nobody want to know which one, that strange to focus only at devFee and poor debug part (the only additional unusefull features), and not for what that doesnt work.
 - The old code has features that doesnt correspond to free and open source laws.
 - Our code doesnt break any backwards compatibility, as we didnt touch the client part, just only give the owners of a pool the opportunity to follow the evolution of the nodejs team, we are at 7.x not at 4.y wich isnt supported anymore at any time.
