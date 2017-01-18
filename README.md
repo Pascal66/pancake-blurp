@@ -1,4 +1,4 @@
-''Important Notice - Do not use the version that Pascal66 has forked on github as i cannot support his changes.
+SOELexicon : ''Important Notice - Do not use the version that Pascal66 has forked on github as i cannot support his changes.
 he's basically gone removed all the credits and deleted a feature asked by the users here that supports development.
 there is no difference besides from the node version it runs.
 his node v6 & v7 fork breaks backwards compatibility with mine at the cost of no additional features.''
